@@ -1,6 +1,3 @@
-"""
-config info
-"""
 import pandas as pd
 
 

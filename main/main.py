@@ -1,13 +1,12 @@
 import os
 import streamlit as st
 import logging as log
-from conf import sql_generate
+from sql_generate import sql_generate
 
 if __name__ == "__main__":
     current_directory = os.getcwd()
     parent_directory = os.path.dirname(current_directory)
     file_path = parent_directory + "/data/test.xlsx"
-    print(file_path)
     table_name = 'model_sci.sci_simulation_config_xinyu_test'
     sql_generate = sql_generate(file_path, table_name)
     it = sql_generate.generate_bulk_insert_statement()
