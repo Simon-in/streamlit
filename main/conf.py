@@ -22,8 +22,8 @@ class sql_generate:
         for index, row in self.df.iterrows():
             values = []
             for col in columns:
-                value = str(row[col]).replace("'", "''")  # 处理单引号
-                values.append(f"'{value}'")  # 添加引号
+                value = str(row[col]).replace("'", "''")
+                values.append(f"'{value}'")
             values_list.append(f"({', '.join(values)})")
         bulk_insert_statement = (
             f"INSERT INTO {self.table_name} ({', '.join(columns)}) VALUES\n" +

@@ -8,7 +8,7 @@ if __name__ == "__main__":
     parent_directory = os.path.dirname(current_directory)
     file_path = parent_directory + "/data/test.xlsx"
     print(file_path)
-    table_name = 'model_sci.sci_simulation_config_xinyu_test'  # 替换为你的数据库表名
+    table_name = 'model_sci.sci_simulation_config_xinyu_test'
     sql_generate = sql_generate(file_path, table_name)
     it = sql_generate.generate_bulk_insert_statement()
     st = sql_generate.generate_select_statement()
