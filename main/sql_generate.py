@@ -8,12 +8,12 @@ class sql_generate:
         self.df = pd.read_excel(file_path)
         self.df1 = pd.read_excel(file_path, nrows=0)
 
-    def generate_select_statement(self: str) -> str:
+    def bulk_select(self: str) -> str:
         columns = self.df1.columns.tolist()
         select_statement = f"SELECT {', '.join(columns)} FROM {self.table_name};"
         return select_statement
 
-    def generate_bulk_insert_statement(self):
+    def bulk_insert(self):
         columns = self.df.columns.tolist()
         values_list = []
         for index, row in self.df.iterrows():
@@ -27,3 +27,15 @@ class sql_generate:
             ",\n".join(values_list) + ";"
         )
         return bulk_insert_statement
+
+    def bulk_update(self):
+        pass
+
+    def bulk_delete(self):
+        pass
+
+    def bulk_merge(self):
+        pass
+
+    def bulk_truncate(self):
+        pass
