@@ -1,33 +1,59 @@
 import os
 import streamlit as st
 import logging as log
+from PIL import Image
 from sql_generate import sql_generate
 
 if __name__ == "__main__":
+    logger = log.getLogger('console')
+    logger.setLevel(log.DEBUG)  # 设置成 DEBUG 默认会把 INFO WARNING ERROR CRITICAL 都输出
+    ch = log.StreamHandler()
+    ch.setLevel(log.DEBUG)
+    formatter = log.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
     st.title("Streamlit 应用")
-    page = st.sidebar.selectbox("选择页面", ["主页", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE", "Dynamodb", "Mapping"])
+    page = st.sidebar.selectbox("选择页面",
+                                ["主页", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE", "Dynamodb", "Mapping"])
+    sql_generate = sql_generate() #初始化SQL方法
     if page == "主页":
         st.header("欢迎来到主页！")
         st.write('\n')
         st.write("你可以从侧面导航栏选择你想进行的操作")
     elif page == "SELECT":
         st.header("SELECT页面 ")
-        table_name = st.text_input("请输入表名")
-        uploaded_file = st.file_uploader("上传文件", type=["xlsx", "csv"])
-        if uploaded_file is not None:
-            sql_generate = sql_generate(uploaded_file, table_name)
-            select_sql = sql_generate.bulk_select()
-            st.write(f"语句")
-            st.code(select_sql, language='sql')
+        page_1 = st.sidebar.selectbox("选择页面",["单张表", "批量生成多表"])
+        if page_1 == "单张表":
+            st.header("生成单张表Select语句")
+            table_name = None
+            column_list = None
+            if table_name is None and column_list is None:
+                table_name = st.text_input("请输入表名")
+                column_list = st.text_input("请输入字段")
+                if table_name and column_list:
+                    select_sql = sql_generate.bulk_select(None, table_name, column_list)
+                    st.write(f"语句")
+                    st.code(select_sql, language='sql')
+        elif page_1 == "批量生成多表":
+            st.header("生成多张表Select语句")
+            sample_image = Image.open("image/select.png")
+            st.image(sample_image, caption="样例图片", use_column_width=True)
+            uploaded_file = st.file_uploader("上传文件", type=["xlsx", "csv"])
+            if uploaded_file is not None:
+                select_sql = sql_generate.bulk_select(uploaded_file, None, None)
+                st.write(f"语句")
+                st.code(select_sql, language='sql')
+
     elif page == "INSERT":
         st.header("INSERT页面")
+        sample_image = Image.open("image/insert.png")
+        st.image(sample_image, caption="样例图片", use_column_width=True)
         table_name = st.text_input("请输入表名")
         uploaded_file = st.file_uploader("上传文件", type=["xlsx", "csv"])
         if uploaded_file is not None:
-            sql_generate = sql_generate(uploaded_file, table_name)
-            insert_sql = sql_generate.bulk_insert()
+            insert_sql = sql_generate.bulk_insert(uploaded_file, table_name)
             st.write(f"语句：")
             st.code(insert_sql, language='sql')
+
     elif page == "UPDATE":
         st.header("UPDATE页面")
 
