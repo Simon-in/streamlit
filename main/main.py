@@ -1,8 +1,7 @@
-import os
 import streamlit as st
 import logging as log
 from PIL import Image
-from sql_generate import sql_generate
+from sql_generate import bulk_insert, bulk_select
 
 if __name__ == "__main__":
     logger = log.getLogger('console')
@@ -14,7 +13,6 @@ if __name__ == "__main__":
     st.title("Streamlit 应用")
     page = st.sidebar.selectbox("选择页面",
                                 ["主页", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE", "Dynamodb", "Mapping"])
-    sql_generate = sql_generate() #初始化SQL方法
     if page == "主页":
         st.header("欢迎来到主页！")
         st.write('\n')
@@ -30,7 +28,7 @@ if __name__ == "__main__":
                 table_name = st.text_input("请输入表名")
                 column_list = st.text_input("请输入字段")
                 if table_name and column_list:
-                    select_sql = sql_generate.bulk_select(None, table_name, column_list)
+                    select_sql = bulk_select(None, table_name, column_list)
                     st.write(f"语句")
                     st.code(select_sql, language='sql')
         elif page_1 == "批量生成多表":
@@ -39,7 +37,7 @@ if __name__ == "__main__":
             st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.file_uploader("上传文件", type=["xlsx", "csv"])
             if uploaded_file is not None:
-                select_sql = sql_generate.bulk_select(uploaded_file, None, None)
+                select_sql = bulk_select(uploaded_file, None, None)
                 st.write(f"语句")
                 st.code(select_sql, language='sql')
 
@@ -50,7 +48,7 @@ if __name__ == "__main__":
         table_name = st.text_input("请输入表名")
         uploaded_file = st.file_uploader("上传文件", type=["xlsx", "csv"])
         if uploaded_file is not None:
-            insert_sql = sql_generate.bulk_insert(uploaded_file, table_name)
+            insert_sql = bulk_insert(uploaded_file, table_name)
             st.write(f"语句：")
             st.code(insert_sql, language='sql')
 
