@@ -34,19 +34,17 @@ def bulk_insert(file_path, table_name):
     return bulk_insert_statement
 
 
-class sql_generate:
-    def __init__(self):
-        self.file_path = None
-        self.table_name = None
+def bulk_update(self):
+    pass
 
-    def bulk_update(self):
-        pass
 
-    def bulk_delete(self):
-        pass
+def bulk_delete(self):
+    pass
 
-    def bulk_merge(self):
-        pass
 
-    def bulk_truncate(self):
-        pass
+def bulk_merge(self):
+    pass
+
+
+def bulk_truncate(self):
+    pass
