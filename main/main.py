@@ -189,7 +189,7 @@ if __name__ == "__main__":
                     st.code(select_sql, language='sql')
         elif page_1 == "批量生成多表":
             st.header("生成多张表Select语句")
-            sample_image = Image.open("image/select.png")
+            sample_image = Image.open("./image/select.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
             if uploaded_file is not None:
