@@ -1,4 +1,4 @@
-# streamlit_sql
+# streamlit_sql Login : https://appsql-gxwdkozmkjxb9wypkdyyye.streamlit.app/
 
 # main.py : streamlit
 
@@ -7,3 +7,4 @@
 # sql_generate.py : insert select update delete merge truncate
 
 # image : streamlit read png
+
