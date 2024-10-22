@@ -36,7 +36,7 @@ if __name__ == "__main__":
                     st.code(select_sql, language='sql')
         elif page_1 == "批量生成多表":
             st.header("生成多张表Select语句")
-            sample_image = Image.open("image/select.png")
+            sample_image = Image.open("main/image/select.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
             if uploaded_file is not None:
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     elif page == "INSERT":
         st.header("INSERT页面")
-        sample_image = Image.open("image/insert.png")
+        sample_image = Image.open("main/image/insert.png")
         st.image(sample_image, caption="样例图片", use_column_width=True)
         uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
         if uploaded_file is not None:
@@ -67,7 +67,7 @@ if __name__ == "__main__":
             st.write(f"语句：")
             st.code(truncate_sql, language='sql')
         elif page_1 == "批量生成多表":
-            sample_image = Image.open("image/truncate.png")
+            sample_image = Image.open("main/image/truncate.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
             if uploaded_file is not None:
@@ -98,7 +98,7 @@ if __name__ == "__main__":
                 st.code(delete_sql, language='sql')
         elif page_1 == "批量生成多表":
             st.write(f"请上传文件")
-            sample_image = Image.open("image/delete.png")
+            sample_image = Image.open("main/image/delete.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
             if uploaded_file is not None:
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     elif page == "MERGE":
         st.header("MERGE页面")
         st.write(f"请上传文件")
-        sample_image = Image.open("image/merge.png")
+        sample_image = Image.open("main/image/merge.png")
         st.image(sample_image, caption="样例图片", use_column_width=True)
         uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
         if uploaded_file is not None:
