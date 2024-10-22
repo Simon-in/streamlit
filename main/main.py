@@ -28,20 +28,27 @@ def bulk_select(path, table, column):
         return select_statement
 
 
-def bulk_insert(path, table):
-    df = pd.read_excel(path, nrows=0)
-    columns = df.columns.tolist()
-    values_list = []
-    for index, row in df.iterrows():
-        values = []
-        for col in columns:
-            value = str(row[col]).replace("'", "''")
-            values.append(f"'{value}'")
-        values_list.append(f"({', '.join(values)})")
-    insert_statement = (
-            f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES\n" +
-            ",\n".join(values_list) + ";"
-    )
+def bulk_insert(path):
+    df = pd.read_excel(path)
+    df_list = []
+    isrt_list = []
+    for i in range(df.__len__()):
+        df_dict = {}
+        df_dict['table'] = df.iloc[i, 0]
+        df_dict['column'] = df.iloc[i, 1]
+        df_dict['values'] = df.iloc[i, 2]
+        df_list.append(df_dict)
+    for info in df_list:
+        insert_statement = (
+            f"INSERT INTO {info.get('table')} "
+            f" ({info.get('column')}) "
+            f"VALUES ("
+            f"{info.get('values')}"
+            f");"
+        )
+        isrt_list.append(insert_statement)
+    cleaned_statements = [stmt.strip() for stmt in isrt_list if stmt.strip()]
+    insert_statement = "\n".join(cleaned_statements)
     return insert_statement
 
 
@@ -49,8 +56,41 @@ def bulk_update(self):
     pass
 
 
-def bulk_delete(self):
-    pass
+def bulk_delete(path, table, column, del_column, tmp_table):
+    if path is None:
+        delete_statement = f"delete from {table}" \
+                           f" where {del_column} in (" \
+                           f"select {del_column} from {tmp_table}) " \
+                           f"insert into {table}" \
+                           f" ({column}) " \
+                           f"select {column}" \
+                           f" from {tmp_table};"
+        return delete_statement
+    else:
+        df = pd.read_excel(path)
+        df_list = []
+        del_list = []
+        for i in range(df.__len__()):
+            df_dict = {}
+            df_dict['table'] = df.iloc[i, 0]
+            df_dict['column'] = df.iloc[i, 1]
+            df_dict['del_column'] = df.iloc[i, 2]
+            df_dict['tmp_table'] = df.iloc[i, 3]
+            df_list.append(df_dict)
+        for info in df_list:
+            delete_statement = (
+                f"DELETE FROM {info.get('table')} "
+                f"WHERE {info.get('del_column')} IN ("
+                f"SELECT {info.get('del_column')} FROM {info.get('tmp_table')}); "
+                f"INSERT INTO {info.get('table')} "
+                f"({info.get('column')}) "
+                f"SELECT {info.get('column')} "
+                f"FROM {info.get('tmp_table')};"
+            )
+            del_list.append(delete_statement)
+        cleaned_statements = [stmt.strip() for stmt in del_list if stmt.strip()]
+        delete_statement = "\n".join(cleaned_statements)
+        return delete_statement
 
 
 def bulk_merge(self):
@@ -93,7 +133,7 @@ if __name__ == "__main__":
             st.header("生成多张表Select语句")
             sample_image = Image.open("image/select.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
-            uploaded_file = st.file_uploader("上传文件", type=["xlsx", "csv"])
+            uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
             if uploaded_file is not None:
                 select_sql = bulk_select(uploaded_file, None, None)
                 st.write(f"语句")
@@ -103,10 +143,9 @@ if __name__ == "__main__":
         st.header("INSERT页面")
         sample_image = Image.open("image/insert.png")
         st.image(sample_image, caption="样例图片", use_column_width=True)
-        table = st.text_input("请输入表名")
-        uploaded_file = st.file_uploader("上传文件", type=["xlsx", "csv"])
+        uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
         if uploaded_file is not None:
-            insert_sql = bulk_insert(uploaded_file, table)
+            insert_sql = bulk_insert(uploaded_file)
             st.write(f"语句：")
             st.code(insert_sql, language='sql')
 
@@ -127,14 +166,29 @@ if __name__ == "__main__":
 
     elif page == "DELETE":
         st.header("DELETE页面")
-
-delete from table
-where column = ---
-insert into table
-column_list
-select
-column_list
-from table
+        page_1 = st.sidebar.selectbox("选择页面", ["单张表", "批量生成多表"])
+        if page_1 == "单张表":
+            table = None
+            column = None
+            del_column = None
+            tmp_table = None
+            if table is None and column is None and del_column is None and tmp_table is None:
+                table = st.text_input("请输入表名")
+                column = st.text_input("请输入字段")
+                del_column = st.text_input('请输入增量字段如 ID 等')
+                tmp_table = st.text_input('请输入staging层表')
+                delete_sql = bulk_delete(None, table, column, del_column, tmp_table)
+                st.write(f"语句：")
+                st.code(delete_sql, language='sql')
+        elif page_1 == "批量生成多表":
+            st.write(f"请上传文件")
+            sample_image = Image.open("image/delete.png")
+            st.image(sample_image, caption="样例图片", use_column_width=True)
+            uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
+            if uploaded_file is not None:
+                delete_sql = bulk_delete(uploaded_file, None, None, None, None)
+                st.write(f"语句")
+                st.code(delete_sql, language='sql')
 
     elif page == "MERGE":
         st.header("MERGE页面")
