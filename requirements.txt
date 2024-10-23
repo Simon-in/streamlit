@@ -1,7 +1,5 @@
-streamlit
-openpyxl
-pandas
-numpy
-Pillow
-json
-pathlib
+streamlit==
+openpyxl==3.1.0
+pandas==2.2.3
+numpy==1.26.3
+Pillow==10.4.0
