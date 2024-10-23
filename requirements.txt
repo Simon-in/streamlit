@@ -2,7 +2,6 @@ streamlit
 openpyxl
 pandas
 numpy
-logging
 Pillow
 json
 pathlib
