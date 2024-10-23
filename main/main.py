@@ -3,17 +3,9 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
-import logging as log
 from PIL import Image
 from sql_generate import bulk_insert, bulk_select, bulk_merge, bulk_delete, bulk_truncate, bulk_update
 
-
-logger = log.getLogger('console')
-logger.setLevel(log.DEBUG)  # 设置成 DEBUG 默认会把 INFO WARNING ERROR CRITICAL 都输出
-ch = log.StreamHandler()
-ch.setLevel(log.DEBUG)
-formatter = log.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
 
 
 def download_button(button_name: str, file_path: Path, file_type: str) -> None:
