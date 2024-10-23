@@ -25,7 +25,7 @@ def download_button(button_name: str, file_path: Path, file_type: str) -> None:
             st.download_button(
                 label=button_name,
                 data=file_bytes,
-                file_name=file_path.name,
+                file_name=file_path,
                 mime=mime_type
             )
         else:
