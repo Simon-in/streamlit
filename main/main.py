@@ -152,8 +152,6 @@ if __name__ == "__main__":
         st.header("Mapping页面")
         COLS_NUM = 4
         MAX_TEMP_FILES = 10
-        single_TEST_EXCEL = Path("static/接单张模板.xlsx")
-        more_TEST_EXCEL = Path("static/接多张模板.xlsx")
         st.title("id类型的接数mapping_用于非SCI")
         st.markdown(
             """
@@ -161,8 +159,8 @@ if __name__ == "__main__":
             2)配多张就在一个sheet页里往下写就好
             """
         )
-        download_button("单张模板下载", single_TEST_EXCEL, 'xlsx')
-        download_button("多张模板下载", more_TEST_EXCEL, 'xlsx')
+        download_button("单张模板下载", r"main/static/接单张模板.xlsx", 'xlsx')
+        download_button("多张模板下载", r"main/static/接多张模板.xlsx", 'xlsx')
         # 文件上传
         uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
         if uploaded_file is not None:
