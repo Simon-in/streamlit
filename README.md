@@ -1,10 +1,9 @@
-# streamlit_sql Login : https://appsql-gxwdkozmkjxb9wypkdyyye.streamlit.app/
+# streamlit_sql 
 
-# main.py : streamlit
+### Login : https://appsql-gxwdkozmkjxb9wypkdyyye.streamlit.app/
 
-# dy.py : dynamodb mapping
+##  main.py : 应用
 
-# sql_generate.py : insert select update delete merge truncate
+## image : 样例图片
 
-# image : streamlit read png
-
+## static : 数据文件
