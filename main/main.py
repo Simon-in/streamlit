@@ -229,17 +229,19 @@ if __name__ == "__main__":
         st.write('\n')
         st.write("你可以从侧面导航栏选择你想进行的操作")
         download_button("样例下载", r"main/static/样例.xlsx", 'xlsx')
-        uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
+        uploaded_file = st.file_uploader("上传文件", type=["csv", "txt", "xlsx"])
+        if uploaded_file is not None:
+            st.session_state.uploaded_file = uploaded_file
+            st.success("文件上传成功！")
     elif page == "CREATE":
         st.header("CREATE页面 ")
         sample_image = Image.open("main/image/create.png")
         st.image(sample_image, caption="样例图片", use_column_width=True)
-        uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
-        if uploaded_file is not None:
-            create_sql = bulk_create(uploaded_file)
-            sql = sql_formatted(create_sql)
-            st.write(f"语句")
-            st.code(sql, language='sql')
+        uploaded_file = st.session_state.uploaded_file
+        create_sql = bulk_create(uploaded_file)
+        sql = sql_formatted(create_sql)
+        st.write(f"语句")
+        st.code(sql, language='sql')
 
     elif page == "SELECT":
         st.header("SELECT页面 ")
@@ -257,23 +259,21 @@ if __name__ == "__main__":
         elif page_1 == "批量生成多表":
             sample_image = Image.open("main/image/select.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
-            uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
-            if uploaded_file is not None:
-                select_sql = bulk_select(uploaded_file, None, None)
-                sql = sql_formatted(select_sql)
-                st.write(f"语句")
-                st.code(sql, language='sql')
+            uploaded_file = st.session_state.uploaded_file
+            select_sql = bulk_select(uploaded_file, None, None)
+            sql = sql_formatted(select_sql)
+            st.write(f"语句")
+            st.code(sql, language='sql')
 
     elif page == "INSERT":
         st.header("INSERT页面")
         sample_image = Image.open("main/image/insert.png")
         st.image(sample_image, caption="样例图片", use_column_width=True)
-        uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
-        if uploaded_file is not None:
-            insert_sql = bulk_insert(uploaded_file)
-            sql = sql_formatted(insert_sql)
-            st.write(f"语句：")
-            st.code(sql, language='sql')
+        uploaded_file = st.session_state.uploaded_file
+        insert_sql = bulk_insert(uploaded_file)
+        sql = sql_formatted(insert_sql)
+        st.write(f"语句：")
+        st.code(sql, language='sql')
 
     elif page == "TRUNCATE":
         st.header("TRUNCATE页面")
@@ -288,12 +288,11 @@ if __name__ == "__main__":
         elif page_1 == "批量生成多表":
             sample_image = Image.open("main/image/truncate.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
-            uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
-            if uploaded_file is not None:
-                truncate_sql = bulk_truncate(uploaded_file, None)
-                sql = sql_formatted(truncate_sql)
-                st.write(f"语句")
-                st.code(sql, language='sql')
+            uploaded_file = st.session_state.uploaded_file
+            truncate_sql = bulk_truncate(uploaded_file, None)
+            sql = sql_formatted(truncate_sql)
+            st.write(f"语句")
+            st.code(sql, language='sql')
         elif page_1 == "全删全插":
             pass
 
@@ -322,24 +321,22 @@ if __name__ == "__main__":
             st.write(f"请上传文件")
             sample_image = Image.open("main/image/delete.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
-            uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
-            if uploaded_file is not None:
-                delete_sql = bulk_delete(uploaded_file, None, None, None, None)
-                sql = sql_formatted(delete_sql)
-                st.write(f"语句")
-                st.code(sql, language='sql')
+            uploaded_file = st.session_state.uploaded_file
+            delete_sql = bulk_delete(uploaded_file, None, None, None, None)
+            sql = sql_formatted(delete_sql)
+            st.write(f"语句")
+            st.code(sql, language='sql')
 
     elif page == "MERGE":
         st.header("MERGE页面")
         st.write(f"请上传文件")
         sample_image = Image.open("main/image/merge.png")
         st.image(sample_image, caption="样例图片", use_column_width=True)
-        uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
-        if uploaded_file is not None:
-            merge_sql = bulk_merge(uploaded_file)
-            sql = sql_formatted(merge_sql)
-            st.write(f"语句")
-            st.code(sql, language='sql')
+        uploaded_file = st.session_state.uploaded_file
+        merge_sql = bulk_merge(uploaded_file)
+        sql = sql_formatted(merge_sql)
+        st.write(f"语句")
+        st.code(sql, language='sql')
 
     elif page == "Dynamodb":
         st.header("Dynamodb页面")
@@ -355,20 +352,19 @@ if __name__ == "__main__":
             2)配多张就在一个sheet页里往下写就好
             """
         )
-        uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
-        if uploaded_file is not None:
-            df = pd.read_excel(uploaded_file, sheet_name='mapping')
-            df['derive_desc'] = df['derive_desc'].fillna('None')
-            json_data = df.to_dict(orient='records')
-            start_id = st.number_input("Input Start Number:  :rainbow[[id]]", value=1,
-                                       placeholder="Type a number...", step=1)
-            for index, item in enumerate(json_data, start=start_id):
-                item["id"] = str(index)
-            json_str = json.dumps(json_data, indent=4)
-            st.download_button(
-                label="Download JSON",
-                data=json_str,
-                file_name="output.json",
-                mime="application/json"
-            )
-            st.json(json_data)
+        uploaded_file = st.session_state.uploaded_file
+        df = pd.read_excel(uploaded_file, sheet_name='mapping')
+        df['derive_desc'] = df['derive_desc'].fillna('None')
+        json_data = df.to_dict(orient='records')
+        start_id = st.number_input("Input Start Number:  :rainbow[[id]]", value=1,
+                                   placeholder="Type a number...", step=1)
+        for index, item in enumerate(json_data, start=start_id):
+            item["id"] = str(index)
+        json_str = json.dumps(json_data, indent=4)
+        st.download_button(
+            label="Download JSON",
+            data=json_str,
+            file_name="output.json",
+            mime="application/json"
+        )
+        st.json(json_data)
