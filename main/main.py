@@ -203,6 +203,10 @@ def bulk_update(self):
     pass
 
 
+def sql_formatted(sql):
+    return sqlparse.format(sql, reindent=True, Keyword_case='upper')
+
+
 if __name__ == "__main__":
     st.title("Streamlit 应用")
     page = st.sidebar.selectbox("选择页面",
@@ -219,7 +223,7 @@ if __name__ == "__main__":
         uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
         if uploaded_file is not None:
             create_sql = bulk_create(uploaded_file)
-            sql = sqlparse.format(create_sql, reindent=True, Keyword_case='upper')
+            sql = sql_formatted(create_sql)
             st.write(f"语句")
             st.code(sql, language='sql')
 
@@ -252,8 +256,9 @@ if __name__ == "__main__":
         uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
         if uploaded_file is not None:
             insert_sql = bulk_insert(uploaded_file)
+            sql = sql_formatted(insert_sql)
             st.write(f"语句：")
-            st.code(insert_sql, language='sql')
+            st.code(sql, language='sql')
 
     elif page == "TRUNCATE":
         st.header("TRUNCATE页面")
