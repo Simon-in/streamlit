@@ -41,8 +41,6 @@ def bulk_insert(path):
             f");"
         )
         isrt_list.append(insert_statement)
-    # cleaned_statements = [stmt.strip() for stmt in isrt_list if stmt.strip()]
-    # insert_statement = "\n".join(cleaned_statements)
     return isrt_list
 
 
@@ -195,9 +193,7 @@ def bulk_create(path):
         columns_definition = ",".join(column_)
         create_ = f"CREATE TABLE {table_} ({columns_definition});"
         create_list.append(create_)
-    cleaned_statements = [stmt.strip() for stmt in create_list if stmt.strip()]
-    create_statement = "\n".join(cleaned_statements)
-    return create_statement
+    return create_list
 
 def bulk_update(self):
     pass
@@ -206,14 +202,11 @@ def bulk_update(self):
 def sql_formatted(sql_list):
     list = []
     for sql in sql_list:
-        formatted_sql = sqlparse.format(sql,
-                                        reindent=True,
-                                        keyword_case='upper',
-                                        strip_comments=True)
+        formatted_sql = sqlparse.format(sql,reindent=True,keyword_case='upper')
         list.append(formatted_sql)
     cleaned_statements = [stmt.strip() for stmt in list if stmt.strip()]
-    create_statement = "\n".join(cleaned_statements)
-    return create_statement
+    statement = "\n".join(cleaned_statements)
+    return statement
 
 
 if __name__ == "__main__":
@@ -266,8 +259,8 @@ if __name__ == "__main__":
         if uploaded_file is not None:
             insert_sql = bulk_insert(uploaded_file)
             sql = sql_formatted(insert_sql)
-            st.write(f"语句：")
-            st.code(sql, language='sql')
+            st.write(f"语句：", sql)
+            # st.code(sql, language='sql')
 
     elif page == "TRUNCATE":
         st.header("TRUNCATE页面")
