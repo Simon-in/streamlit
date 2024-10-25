@@ -221,7 +221,6 @@ def sql_formatted(sql_list):
 
 
 if __name__ == "__main__":
-    st.title("Streamlit 应用")
     page = st.sidebar.selectbox("选择页面",
                                 ["主页", "CREATE", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE", "Dynamodb", "Mapping"])
     if page == "主页":
