@@ -242,6 +242,12 @@ if __name__ == "__main__":
         sql = sql_formatted(create_sql)
         st.write(f"语句")
         st.code(sql, language='sql')
+        st.download_button(
+            label="Download sql",
+            data=sql,
+            file_name="create.sql",
+            mime="application/sql"
+        )
 
     elif page == "SELECT":
         st.header("SELECT页面 ")
@@ -264,6 +270,12 @@ if __name__ == "__main__":
             sql = sql_formatted(select_sql)
             st.write(f"语句")
             st.code(sql, language='sql')
+            st.download_button(
+                label="Download sql",
+                data=sql,
+                file_name="select.sql",
+                mime="application/sql"
+            )
 
     elif page == "INSERT":
         st.header("INSERT页面")
@@ -274,6 +286,12 @@ if __name__ == "__main__":
         sql = sql_formatted(insert_sql)
         st.write(f"语句：")
         st.code(sql, language='sql')
+        st.download_button(
+            label="Download sql",
+            data=sql,
+            file_name="insert.sql",
+            mime="application/sql"
+        )
 
     elif page == "TRUNCATE":
         st.header("TRUNCATE页面")
@@ -293,6 +311,12 @@ if __name__ == "__main__":
             sql = sql_formatted(truncate_sql)
             st.write(f"语句")
             st.code(sql, language='sql')
+            st.download_button(
+                label="Download sql",
+                data=sql,
+                file_name="truncate.sql",
+                mime="application/sql"
+            )
         elif page_1 == "全删全插":
             pass
 
@@ -318,7 +342,6 @@ if __name__ == "__main__":
                 st.code(delete_sql, language='sql')
 
         elif page_1 == "批量生成多表":
-            st.write(f"请上传文件")
             sample_image = Image.open("main/image/delete.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.session_state.uploaded_file
@@ -326,10 +349,15 @@ if __name__ == "__main__":
             sql = sql_formatted(delete_sql)
             st.write(f"语句")
             st.code(sql, language='sql')
+            st.download_button(
+                label="Download sql",
+                data=sql,
+                file_name="delete.sql",
+                mime="application/sql"
+            )
 
     elif page == "MERGE":
         st.header("MERGE页面")
-        st.write(f"请上传文件")
         sample_image = Image.open("main/image/merge.png")
         st.image(sample_image, caption="样例图片", use_column_width=True)
         uploaded_file = st.session_state.uploaded_file
@@ -337,6 +365,12 @@ if __name__ == "__main__":
         sql = sql_formatted(merge_sql)
         st.write(f"语句")
         st.code(sql, language='sql')
+        st.download_button(
+            label="Download sql",
+            data=sql,
+            file_name="merge.sql",
+            mime="application/sql"
+        )
 
     elif page == "Dynamodb":
         st.header("Dynamodb页面")
@@ -345,13 +379,6 @@ if __name__ == "__main__":
         st.header("Mapping页面")
         COLS_NUM = 4
         MAX_TEMP_FILES = 10
-        st.title("id类型的接数mapping_用于非SCI")
-        st.markdown(
-            """
-            1)上传的xlsx里得自己配上系统字段,id不用配
-            2)配多张就在一个sheet页里往下写就好
-            """
-        )
         uploaded_file = st.session_state.uploaded_file
         df = pd.read_excel(uploaded_file, sheet_name='mapping')
         df['derive_desc'] = df['derive_desc'].fillna('None')
