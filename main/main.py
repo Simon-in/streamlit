@@ -46,10 +46,6 @@ def bulk_insert(path):
     return insert_statement
 
 
-def bulk_update(self):
-    pass
-
-
 def bulk_delete(path, target_table, column, uniqueid, source_table):
     if path is None:
         delete_statement = f"delete from {target_table} \n" \
@@ -184,19 +180,50 @@ def download_button(button_name: str, file_path, file_type: str) -> None:
         st.error(f"File not found: {file_path}")
 
 
+def bulk_create(path):
+    df = pd.read_excel(path)
+    create_statements = {}
+    create_statement = []
+    for index, row in df.iterrows():
+        table__ = row[0]
+        column__ = row[1]
+        type__ = row[2]
+        if table__ not in create_statements:
+            create_statements[table__] = []
+        create_statements[table__].append(f"{column__} {type__}")
+    for table_, column_ in create_statements.items():
+        columns_definition = ",\n    ".join(column_)
+        create_ = f"CREATE TABLE {table_} (\n    {columns_definition}\n);"
+        create_statement.append(create_)
+    return create_statement
+
+def bulk_update(self):
+    pass
+
+
 if __name__ == "__main__":
     st.title("Streamlit 应用")
     page = st.sidebar.selectbox("选择页面",
-                                ["主页", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE", "Dynamodb", "Mapping"])
+                                ["主页", "CREATE", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE", "Dynamodb", "Mapping"])
     if page == "主页":
         st.header("欢迎来到主页！")
         st.write('\n')
         st.write("你可以从侧面导航栏选择你想进行的操作")
+
+    elif page == "CREATE":
+        st.header("CREATE页面 ")
+        sample_image = Image.open("main/image/create.png")
+        st.image(sample_image, caption="样例图片", use_column_width=True)
+        uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
+        if uploaded_file is not None:
+            create_sql = bulk_create(uploaded_file)
+            st.write(f"语句")
+            st.code(create_sql, language='sql')
+
     elif page == "SELECT":
         st.header("SELECT页面 ")
         page_1 = st.sidebar.selectbox("选择页面", ["单张表", "批量生成多表"])
         if page_1 == "单张表":
-            st.header("生成单张表Select语句")
             table_name = None
             column_list = None
             if table_name is None and column_list is None:
@@ -207,7 +234,6 @@ if __name__ == "__main__":
                     st.write(f"语句")
                     st.code(select_sql, language='sql')
         elif page_1 == "批量生成多表":
-            st.header("生成多张表Select语句")
             sample_image = Image.open("main/image/select.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
@@ -228,7 +254,7 @@ if __name__ == "__main__":
 
     elif page == "TRUNCATE":
         st.header("TRUNCATE页面")
-        page_1 = st.sidebar.selectbox("选择页面", ["单张表", "批量生成多表"])
+        page_1 = st.sidebar.selectbox("选择页面", ["单张表", "批量生成多表", "全删全插"])
         if page_1 == "单张表":
             table = None
             if table is None:
@@ -246,6 +272,8 @@ if __name__ == "__main__":
                 truncate_sql = bulk_truncate(uploaded_file, None)
                 st.write(f"语句")
                 st.code(truncate_sql, language='sql')
+        elif page_1 == "全删全插":
+            pass
 
     elif page == "UPDATE":  # 暂时没有想到批量化
         st.header("UPDATE页面")
@@ -267,6 +295,7 @@ if __name__ == "__main__":
                 delete_sql = bulk_delete(None, target_table, column, uniqueid, source_table)
                 st.write(f"语句：")
                 st.code(delete_sql, language='sql')
+
         elif page_1 == "批量生成多表":
             st.write(f"请上传文件")
             sample_image = Image.open("main/image/delete.png")
@@ -287,45 +316,39 @@ if __name__ == "__main__":
             merge_sql = bulk_merge(uploaded_file)
             st.write(f"语句")
             st.code(merge_sql, language='sql')
+
     elif page == "Dynamodb":
         st.header("Dynamodb页面")
 
     elif page == "Mapping":
         st.header("Mapping页面")
-        page_1 = st.sidebar.selectbox("选择页面", ["生成mapping", "转换mapping"])
-        if page_1 == "生成mapping":
-            COLS_NUM = 4
-            MAX_TEMP_FILES = 10
-            st.title("id类型的接数mapping_用于非SCI")
-            st.markdown(
-                """
-                1)上传的xlsx里得自己配上系统字段,id不用配
-                2)配多张就在一个sheet页里往下写就好
-                """
+        COLS_NUM = 4
+        MAX_TEMP_FILES = 10
+        st.title("id类型的接数mapping_用于非SCI")
+        st.markdown(
+            """
+            1)上传的xlsx里得自己配上系统字段,id不用配
+            2)配多张就在一个sheet页里往下写就好
+            """
+        )
+        download_button("单张模板下载", r"main/static/接单张模板.xlsx", 'xlsx')
+        download_button("多张模板下载", r"main/static/接多张模板.xlsx", 'xlsx')
+        uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
+        if uploaded_file is not None:
+            df = pd.read_excel(uploaded_file, sheet_name='Sheet1')
+            df['derive_desc'] = df['derive_desc'].fillna('None')
+            json_data = df.to_dict(orient='records')
+            start_id = st.number_input("Input Start Number:  :rainbow[[id]]", value=1,
+                                       placeholder="Type a number...", step=1)
+            for index, item in enumerate(json_data, start=start_id):
+                item["id"] = str(index)
+            json_str = json.dumps(json_data, indent=4)
+            st.download_button(
+                label="Download JSON",
+                data=json_str,
+                file_name="output.json",
+                mime="application/json"
             )
-            download_button("单张模板下载", r"main/static/接单张模板.xlsx", 'xlsx')
-            download_button("多张模板下载", r"main/static/接多张模板.xlsx", 'xlsx')
-            # 文件上传
-            uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
-            if uploaded_file is not None:
-                # 转换为 JSON
-                df = pd.read_excel(uploaded_file, sheet_name='Sheet1')
-                df['derive_desc'] = df['derive_desc'].fillna('None')
-                json_data = df.to_dict(orient='records')
-                start_id = st.number_input("Input Start Number:  :rainbow[[id]]", value=1,
-                                           placeholder="Type a number...", step=1)
-                for index, item in enumerate(json_data, start=start_id):
-                    item["id"] = str(index)
-                # 下载 JSON 文件
-                json_str = json.dumps(json_data, indent=4)
-                st.download_button(
-                    label="Download JSON",
-                    data=json_str,
-                    file_name="output.json",
-                    mime="application/json"
-                )
-                # 显示 JSON 数据
-                st.json(json_data)
-        elif page_1 == '转换mapping':
-            pass
+            st.json(json_data)
+
 
