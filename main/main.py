@@ -211,11 +211,11 @@ def bulk_update(self):
 
 
 def sql_formatted(sql_list):
-    list = []
-    for sql in sql_list:
-        formatted_sql = sqlparse.format(sql,reindent=True,keyword_case='upper')
-        list.append(formatted_sql)
-    cleaned_statements = [stmt.strip() for stmt in list if stmt.strip()]
+    # list = []
+    # for sql in sql_list:
+    #     formatted_sql = sqlparse.format(sql,reindent=True,keyword_case='upper')
+    #     list.append(formatted_sql)
+    cleaned_statements = [stmt.strip() for stmt in sql_list if stmt.strip()]
     statement = "\n".join(cleaned_statements)
     return statement
 
