@@ -1,5 +1,5 @@
 import json
-
+import sqlparse
 import pandas as pd
 import streamlit as st
 from PIL import Image
@@ -183,7 +183,7 @@ def download_button(button_name: str, file_path, file_type: str) -> None:
 def bulk_create(path):
     df = pd.read_excel(path)
     create_statements = {}
-    create_statement = []
+    create_list = []
     for index, row in df.iterrows():
         table__ = row[0]
         column__ = row[1]
@@ -194,7 +194,9 @@ def bulk_create(path):
     for table_, column_ in create_statements.items():
         columns_definition = ",\n    ".join(column_)
         create_ = f"CREATE TABLE {table_} (\n    {columns_definition}\n);"
-        create_statement.append(create_)
+        create_list.append(create_)
+    cleaned_statements = [stmt.strip() for stmt in create_list if stmt.strip()]
+    create_statement = "\n".join(cleaned_statements)
     return create_statement
 
 def bulk_update(self):
@@ -217,8 +219,9 @@ if __name__ == "__main__":
         uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
         if uploaded_file is not None:
             create_sql = bulk_create(uploaded_file)
+            sql = sqlparse.format(create_sql, reindent=True, Keyword_case='upper')
             st.write(f"语句")
-            st.code(create_sql, language='sql')
+            st.code(sql, language='sql')
 
     elif page == "SELECT":
         st.header("SELECT页面 ")
