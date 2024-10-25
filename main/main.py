@@ -41,9 +41,9 @@ def bulk_insert(path):
             f");"
         )
         isrt_list.append(insert_statement)
-    cleaned_statements = [stmt.strip() for stmt in isrt_list if stmt.strip()]
-    insert_statement = "\n".join(cleaned_statements)
-    return insert_statement
+    # cleaned_statements = [stmt.strip() for stmt in isrt_list if stmt.strip()]
+    # insert_statement = "\n".join(cleaned_statements)
+    return isrt_list
 
 
 def bulk_delete(path, target_table, column, uniqueid, source_table):
@@ -203,8 +203,13 @@ def bulk_update(self):
     pass
 
 
-def sql_formatted(sql):
-    return sqlparse.format(sql, reindent=True, Keyword_case='upper')
+def sql_formatted(sql_list):
+    for sql in sql_list:
+        formatted_sql = sqlparse.format(sql,
+                                        reindent=True,
+                                        keyword_case='upper',
+                                        strip_comments=True)
+        return formatted_sql
 
 
 if __name__ == "__main__":
