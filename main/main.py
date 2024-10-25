@@ -228,7 +228,8 @@ if __name__ == "__main__":
         st.header("欢迎来到主页！")
         st.write('\n')
         st.markdown(
-            "你可以从侧面导航栏选择你想进行的操作,"
+            "在上传文件前请下载样例文件查看如何配置后,\n"
+            "你可以从侧面导航栏选择你想进行的操作,\n"
             "复制sql语句或者下载sql文件"
         )
         download_button("样例下载", r"main/static/样例.xlsx", 'xlsx')
