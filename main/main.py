@@ -229,7 +229,7 @@ if __name__ == "__main__":
         st.write('\n')
         st.write("你可以从侧面导航栏选择你想进行的操作")
         download_button("样例下载", r"main/static/样例.xlsx", 'xlsx')
-
+        uploaded_file = st.file_uploader("上传文件", type=["xlsx"])
     elif page == "CREATE":
         st.header("CREATE页面 ")
         sample_image = Image.open("main/image/create.png")
