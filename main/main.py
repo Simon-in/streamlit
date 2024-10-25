@@ -192,8 +192,8 @@ def bulk_create(path):
             create_statements[table__] = []
         create_statements[table__].append(f"{column__} {type__}")
     for table_, column_ in create_statements.items():
-        columns_definition = ",\n    ".join(column_)
-        create_ = f"CREATE TABLE {table_} (\n    {columns_definition}\n);"
+        columns_definition = ",".join(column_)
+        create_ = f"CREATE TABLE {table_} ({columns_definition});"
         create_list.append(create_)
     cleaned_statements = [stmt.strip() for stmt in create_list if stmt.strip()]
     create_statement = "\n".join(cleaned_statements)
