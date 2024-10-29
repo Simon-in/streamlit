@@ -417,7 +417,7 @@ if __name__ == "__main__":
                           f'"state_machine_name": "ph-cdp-sm-workflow-cn-etl_em_data_load",\n' \
                           f'"time_delta": "0*60",\n' \
                           f'"use_cols": ""\n' \
-                          '}\n' \
+                          '}\n'
                 dy_list.append(dy_json)
             json_str = json.dumps(dy_list, indent=4)
             st.json(json_str)
