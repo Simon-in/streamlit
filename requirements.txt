@@ -4,3 +4,4 @@ pandas==2.2.3
 numpy==1.26.3
 Pillow==10.4.0
 sqlparse==0.5.1
+json
