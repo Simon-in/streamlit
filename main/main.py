@@ -391,18 +391,43 @@ if __name__ == "__main__":
                     dy_statements[table] = []
                 dy_statements[table].append(f"{column}")
             for k, v in dy_statements.items():
-                dy_json = f""""domain": "enriched_em","entity": "staging_{k}","delimiter": ",","file_inzip_pattern": "","file_inzip_suffix": "","is_archive": "N","is_exchange_merge": "false",""is_signal_file": "false","is_soft_fail": "true","landing_file_format": "csv","merge_order_cols": "","merge_order_sc": "desc","primary_keys": "","redshift_enriched_post_job": "truncate table enriched_em.staging_{k}","salesforce_identifier": "{env}","salesforce_name": "{k}","skip_row": "0","source_sensor_poke_interval": "60","source_sensor_retry_time": "1","source_system": "salesforce","sql_query": "select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10","standard_columns": "id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)}","state_machine_name": "ph-cdp-sm-workflow-cn-etl_em_data_load","time_delta": "0*60","use_cols": ""
-            """
+                dy_json = '{' \
+                          f'"domain":"{domain}",' \
+                          f'"entity":"{k}",' \
+                          f'"delimiter": ",",' \
+                          f'"file_inzip_pattern": "",' \
+                          f'"file_inzip_suffix": "",' \
+                          f'"is_archive": "N",' \
+                          f'"is_exchange_merge": "false",' \
+                          f'"is_header": "true",' \
+                          f'"is_signal_file": "false",' \
+                          f'"is_soft_fail": "true",' \
+                          f'"landing_file_format": "csv",' \
+                          f'"merge_order_cols": "",' \
+                          f'"merge_order_sc": "desc",' \
+                          f'"primary_keys": "",' \
+                          f'"redshift_enriched_post_job": "truncate table enriched_em.staging_{k}",' \
+                          f'"salesforce_identifier": "{env}",' \
+                          f'"salesforce_name": "{k}",' \
+                          f'"skip_row": "0",' \
+                          f'"source_sensor_poke_interval": "60",' \
+                          f'"source_sensor_retry_time": "1",' \
+                          f'"source_system": "salesforce",' \
+                          f'"sql_query": "select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{",".join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",' \
+                          f'"standard_columns": "id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{",".join(v)}",' \
+                          f'"state_machine_name": "ph-cdp-sm-workflow-cn-etl_em_data_load",' \
+                          f'"time_delta": "0*60",' \
+                          f'"use_cols": ""' \
+                          '}'
                 dy_list.append(dy_json)
-            for info in dy_list:
-                json_str = info.loads(info, indent=4)
-                st.json(json_str)
-                st.download_button(
-                    label="Download JSON",
-                    data=json_str,
-                    file_name="output.json",
-                    mime="application/json"
-                )
+            json_str = json.dumps(dy_list)
+            st.json(json_str)
+            st.download_button(
+                label="Download JSON",
+                data=json_str,
+                file_name="output.json",
+                mime="application/json"
+            )
 
 
     elif page == "Mapping":
