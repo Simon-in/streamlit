@@ -421,13 +421,14 @@ if __name__ == "__main__":
             """
                 dy_list.append(dy_json)
             json_str = json.dumps(dy_list, indent=4)
+            data = st.json(json_str)
+            st.json(json_str)
             st.download_button(
                 label="Download JSON",
-                data=json_str,
+                data=data,
                 file_name="output.json",
                 mime="application/json"
             )
-            st.json(json_str)
 
 
     elif page == "Mapping":
