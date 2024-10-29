@@ -385,8 +385,8 @@ if __name__ == "__main__":
             domain = 'enriched_em'
             env = 'opera2-dev'
             for index, row in df.iterrows():
-                table = row[1]
-                column = row[2]
+                table = row[0]
+                column = row[1]
                 if table not in dy_statements:
                     dy_statements[table] = []
                 dy_statements[table].append(f"{column}")
