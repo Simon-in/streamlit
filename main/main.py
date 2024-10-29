@@ -420,7 +420,7 @@ if __name__ == "__main__":
                           f'"use_cols": ""' \
                           '}'
                 dy_list.append(dy_json)
-            json_str = json.dumps(dy_list)
+            json_str = json.dumps(dy_list, indent=4)
             st.json(json_str)
             st.download_button(
                 label="Download JSON",
