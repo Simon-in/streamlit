@@ -398,7 +398,7 @@ if __name__ == "__main__":
             st.json(json_str)
             st.download_button(
                 label="Download JSON",
-                data=data,
+                data=json_str,
                 file_name="output.json",
                 mime="application/json"
             )
