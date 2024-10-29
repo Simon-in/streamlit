@@ -390,34 +390,34 @@ if __name__ == "__main__":
                     dy_statements[table] = []
                 dy_statements[table].append(f"{column}")
             for k, v in dy_statements.items():
-                dy_json = '{' \
-                          f'"domain":"{domain}",' \
-                          f'"entity":"{k}",' \
-                          f'"delimiter": ",",' \
-                          f'"file_inzip_pattern": "",' \
-                          f'"file_inzip_suffix": "",' \
-                          f'"is_archive": "N",' \
-                          f'"is_exchange_merge": "false",' \
-                          f'"is_header": "true",' \
-                          f'"is_signal_file": "false",' \
-                          f'"is_soft_fail": "true",' \
-                          f'"landing_file_format": "csv",' \
-                          f'"merge_order_cols": "",' \
-                          f'"merge_order_sc": "desc",' \
-                          f'"primary_keys": "",' \
-                          f'"redshift_enriched_post_job": "truncate table enriched_em.staging_{k}",' \
-                          f'"salesforce_identifier": "{env}",' \
-                          f'"salesforce_name": "{k}",' \
-                          f'"skip_row": "0",' \
-                          f'"source_sensor_poke_interval": "60",' \
-                          f'"source_sensor_retry_time": "1",' \
-                          f'"source_system": "salesforce",' \
-                          f'"sql_query": "select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{",".join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",' \
-                          f'"standard_columns": "id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{",".join(v)}",' \
-                          f'"state_machine_name": "ph-cdp-sm-workflow-cn-etl_em_data_load",' \
-                          f'"time_delta": "0*60",' \
-                          f'"use_cols": ""' \
-                          '}'
+                dy_json = '{ \n' \
+                          f'"domain":"{domain}", \n' \
+                          f'"entity":"{k}",\n' \
+                          f'"delimiter": ",",\n' \
+                          f'"file_inzip_pattern": "",\n' \
+                          f'"file_inzip_suffix": "",\n' \
+                          f'"is_archive": "N",\n' \
+                          f'"is_exchange_merge": "false",\n' \
+                          f'"is_header": "true",\n' \
+                          f'"is_signal_file": "false",\n' \
+                          f'"is_soft_fail": "true",\n' \
+                          f'"landing_file_format": "csv",\n' \
+                          f'"merge_order_cols": "",\n' \
+                          f'"merge_order_sc": "desc",\n' \
+                          f'"primary_keys": "",\n' \
+                          f'"redshift_enriched_post_job": "truncate table enriched_em.staging_{k}",\n' \
+                          f'"salesforce_identifier": "{env}",\n' \
+                          f'"salesforce_name": "{k}",\n' \
+                          f'"skip_row": "0",\n' \
+                          f'"source_sensor_poke_interval": "60",\n' \
+                          f'"source_sensor_retry_time": "1",\n' \
+                          f'"source_system": "salesforce",\n' \
+                          f'"sql_query": "select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{",".join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",\n' \
+                          f'"standard_columns": "id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{",".join(v)}",\n' \
+                          f'"state_machine_name": "ph-cdp-sm-workflow-cn-etl_em_data_load",\n' \
+                          f'"time_delta": "0*60",\n' \
+                          f'"use_cols": ""\n' \
+                          '}\n' \
                 dy_list.append(dy_json)
             json_str = json.dumps(dy_list, indent=4)
             st.json(json_str)
