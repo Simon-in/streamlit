@@ -378,12 +378,11 @@ if __name__ == "__main__":
         st.header("Dynamodb页面")
         uploaded_file = st.file_uploader("上传文件", type=["csv", "txt", "xlsx"])
         domain = st.text_input("请输入domain")
+        env = st.text_input("请输入env")
         if uploaded_file is not None:
             df = pd.read_excel(uploaded_file)
             dy_statements = {}
             dy_list = []
-            domain = 'enriched_em'
-            env = 'opera2-dev'
             for index, row in df.iterrows():
                 table = row[0]
                 column = row[1]
