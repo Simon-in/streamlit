@@ -379,6 +379,7 @@ if __name__ == "__main__":
         uploaded_file = st.file_uploader("上传文件", type=["csv", "txt", "xlsx"])
         domain = st.text_input("请输入domain")
         env = st.text_input("请输入env")
+        state_machine_name = st.text_input("请输入step function名称")
         if uploaded_file is not None:
             df = pd.read_excel(uploaded_file)
             dy_statements = {}
@@ -414,7 +415,7 @@ if __name__ == "__main__":
                           f'"source_system": "salesforce",\n' \
                           f'"sql_query": "select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{",".join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",\n' \
                           f'"standard_columns": "id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{",".join(v)}",\n' \
-                          f'"state_machine_name": "ph-cdp-sm-workflow-cn-etl_em_data_load",\n' \
+                          f'"state_machine_name": "{state_machine_name}",\n' \
                           f'"time_delta": "0*60",\n' \
                           f'"use_cols": ""\n' \
                           '}\n'
