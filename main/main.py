@@ -136,7 +136,6 @@ def bulk_merge(path):
             df_dict['source_table'] = df.iloc[i, 3]
             df_dict['source_column'] = df.iloc[i, 4]
             df_list.append(df_dict)
-            i = 0
         for info in df_list:
             target_columns = info.get('target_column').split(",")
             up_list = []
@@ -377,6 +376,59 @@ if __name__ == "__main__":
 
     elif page == "Dynamodb":
         st.header("Dynamodb页面")
+        uploaded_file = st.file_uploader("上传文件", type=["csv", "txt", "xlsx"])
+        domain = st.text_input("请输入domain")
+        if uploaded_file is not None:
+            df = pd.read_excel(uploaded_file)
+            dy_statements = {}
+            dy_list = []
+            domain = 'enriched_em'
+            env = 'opera2-dev'
+            for index, row in df.iterrows():
+                table = row[1]
+                column = row[2]
+                if table not in dy_statements:
+                    dy_statements[table] = []
+                dy_statements[table].append(f"{column}")
+            for k, v in dy_statements.items():
+                dy_json = f"""
+                "domain": "enriched_em",
+                "entity": "staging_{k}",
+                "delimiter": ",",
+                "file_inzip_pattern": "",
+                "file_inzip_suffix": "",
+                "is_archive": "N",
+                "is_exchange_merge": "false",
+                "is_header": "true",
+                "is_signal_file": "false",
+                "is_soft_fail": "true",
+                "landing_file_format": "csv",
+                "merge_order_cols": "",
+                "merge_order_sc": "desc",
+                "primary_keys": "",
+                "redshift_enriched_post_job": "truncate table enriched_em.staging_{k}",
+                "salesforce_identifier": "{env}",
+                "salesforce_name": "{k}",
+                "skip_row": "0",
+                "source_sensor_poke_interval": "60",
+                "source_sensor_retry_time": "1",
+                "source_system": "salesforce",
+                "sql_query": "select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",
+                "standard_columns": "id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)}",
+                "state_machine_name": "ph-cdp-sm-workflow-cn-etl_em_data_load",
+                "time_delta": "0*60",
+                "use_cols": ""
+            """
+                dy_list.append(dy_json)
+            json_str = json.dumps(dy_list, indent=4)
+            st.download_button(
+                label="Download JSON",
+                data=json_str,
+                file_name="output.json",
+                mime="application/json"
+            )
+            st.json(json_str)
+
 
     elif page == "Mapping":
         st.header("Mapping页面")
