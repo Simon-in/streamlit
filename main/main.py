@@ -125,8 +125,8 @@ def bulk_merge(path):
             source_column = row[4]
 
             # 假设 target_column 和 source_column 是列表或可以转为列表的对象
-            formatted_fields_target = ',\n    '.join(target_column)  # 将字段换行格式化
-            formatted_fields_source = ',\n    '.join(source_column)  # 将字段换行格式化
+            formatted_fields_target = '\n    '.join(target_column)  # 将字段换行格式化
+            formatted_fields_source = '\n    '.join(source_column)  # 将字段换行格式化
 
             merge_statement = (
                 f"--------- {target_table} --------- \n"
