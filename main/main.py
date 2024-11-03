@@ -39,12 +39,29 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
                            f" from {source_table};"
         return delete_statement
     else:
-        df = pd.read_excel(path, sheet_name='delete')
-        del_list =  [
-            f"DELETE FROM {row[0]} WHERE {row[2]} IN (SELECT {row[2]} FROM {row[3]});\n"
-            f"INSERT INTO {row[0]} ({row[1]}) SELECT {row[1]} FROM {row[3]};"
-            for row in df.itertuples(index=False)
-        ]
+        del_list = []
+
+        for index, row in df.iterrows():
+            target_table = row[0]  # 第一列：目标表名
+            fields = row[1].split(',')  # 第二列：字段字符串，按逗号分隔
+            increment_field = row[2]  # 第三列：增量字段
+            source_table = row[3]  # 第四列：源表
+
+            # 生成 DELETE 语句
+            delete_statement = (
+                f"DELETE FROM {target_table} "
+                f"WHERE {increment_field} IN (SELECT {increment_field} FROM {source_table});"
+            )
+
+            # 生成 INSERT 语句，字段换行
+            formatted_fields = ',\n    '.join(fields)  # 将字段换行格式化
+            insert_statement = (
+                f"INSERT INTO {target_table} (\n    {formatted_fields}\n) "
+                f"SELECT \n    {formatted_fields} FROM {source_table};"
+            )
+
+            del_list.append(delete_statement)
+            del_list.append(insert_statement)
         return del_list
 
 
