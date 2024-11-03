@@ -104,6 +104,7 @@ def bulk_truncate(path, a):
         for table_, columns in trun_statements.items():
             columns_definition = ",\n   ".join(columns)
             trun_ = (
+                    f"--------- {table_} --------- \n"
                     f"TRUNCATE TABLE {table_};\n"
                     f"INSERT INTO {table_}\n"
                     f"(\n"
