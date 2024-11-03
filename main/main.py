@@ -364,58 +364,57 @@ if __name__ == "__main__":
 
     elif page == "Dynamodb":
         st.header("Dynamodb页面")
-        uploaded_file = st.file_uploader("上传文件", type=["csv", "txt", "xlsx"])
+        uploaded_file = st.session_state.uploaded_file
         domain = st.text_input("请输入domain")
         env = st.text_input("请输入env")
         state_machine_name = st.text_input("请输入step function名称")
-        if uploaded_file is not None:
-            df = pd.read_excel(uploaded_file, sheet_name='sheet1')
-            dy_statements = {}
-            dy_list = []
-            for index, row in df.iterrows():
-                table = row[0]
-                column = row[1]
-                if table not in dy_statements:
-                    dy_statements[table] = []
-                dy_statements[table].append(f"{column}")
-            for k, v in dy_statements.items():
-                dy_dict = {
-                    "domain": domain,
-                    "entity": k,
-                    "delimiter": ",",
-                    "file_inzip_pattern": "",
-                    "file_inzip_suffix": "",
-                    "is_archive": "N",
-                    "is_exchange_merge": "false",
-                    "is_header": "true",
-                    "is_signal_file": "false",
-                    "is_soft_fail": "true",
-                    "landing_file_format": "csv",
-                    "merge_order_cols": "",
-                    "merge_order_sc": "desc",
-                    "primary_keys": "",
-                    "redshift_enriched_post_job": f"truncate table enriched_em.staging_{k}",
-                    "salesforce_identifier": env,
-                    "salesforce_name": k,
-                    "skip_row": "0",
-                    "source_sensor_poke_interval": "60",
-                    "source_sensor_retry_time": "1",
-                    "source_system": "salesforce",
-                    "sql_query": f"select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",
-                    "standard_columns": f"id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)}",
-                    "state_machine_name": state_machine_name,
-                    "time_delta": "0*60",
-                    "use_cols": ""
-                }
-                dy_list.append(dy_dict)
-            json_str = json.dumps(dy_list, indent=4)
-            st.json(json_str)
-            st.download_button(
-                label="Download JSON",
-                data=json_str,
-                file_name="output.json",
-                mime="application/json"
-            )
+        df = pd.read_excel(uploaded_file, sheet_name='dynamodb')
+        dy_statements = {}
+        dy_list = []
+        for index, row in df.iterrows():
+            table = row[0]
+            column = row[1]
+            if table not in dy_statements:
+                dy_statements[table] = []
+            dy_statements[table].append(f"{column}")
+        for k, v in dy_statements.items():
+            dy_dict = {
+                "domain": domain,
+                "entity": k,
+                "delimiter": ",",
+                "file_inzip_pattern": "",
+                "file_inzip_suffix": "",
+                "is_archive": "N",
+                "is_exchange_merge": "false",
+                "is_header": "true",
+                "is_signal_file": "false",
+                "is_soft_fail": "true",
+                "landing_file_format": "csv",
+                "merge_order_cols": "",
+                "merge_order_sc": "desc",
+                "primary_keys": "",
+                "redshift_enriched_post_job": f"truncate table enriched_em.staging_{k}",
+                "salesforce_identifier": env,
+                "salesforce_name": k,
+                "skip_row": "0",
+                "source_sensor_poke_interval": "60",
+                "source_sensor_retry_time": "1",
+                "source_system": "salesforce",
+                "sql_query": f"select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",
+                "standard_columns": f"id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)}",
+                "state_machine_name": state_machine_name,
+                "time_delta": "0*60",
+                "use_cols": ""
+            }
+            dy_list.append(dy_dict)
+        json_str = json.dumps(dy_list, indent=4)
+        st.json(json_str)
+        st.download_button(
+            label="Download JSON",
+            data=json_str,
+            file_name="output.json",
+            mime="application/json"
+        )
 
 
     elif page == "Mapping":
