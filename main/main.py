@@ -50,15 +50,14 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
             # 生成 DELETE 语句
             delete_statement = (
                 f"DELETE FROM {target_table}  \n"
-                f"WHERE {increment_field} IN  \n"
-                f"(SELECT {increment_field} FROM {source_table});"
+                f"WHERE {increment_field} IN (SELECT {increment_field} FROM {source_table});"
             )
 
             # 生成 INSERT 语句，字段换行
             formatted_fields = ',\n    '.join(fields)  # 将字段换行格式化
             insert_statement = (
-                f"INSERT INTO {target_table} \n ( \n    {formatted_fields}\n   )\n "
-                f"SELECT \n    {formatted_fields}  \n"
+                f"INSERT INTO {target_table} \n ( \n{formatted_fields}\n )\n "
+                f"SELECT \n  {formatted_fields}  \n"
                 f"FROM {source_table};"
             )
 
