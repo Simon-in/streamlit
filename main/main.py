@@ -44,26 +44,21 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
         del_list = []
         df = pd.read_excel(path, sheet_name='delete')
         for index, row in df.iterrows():
-            target_table = row[0]  # 第一列：目标表名
-            fields = row[1].split(',')  # 第二列：字段字符串，按逗号分隔
-            increment_field = row[2]  # 第三列：增量字段
-            source_table = row[3]  # 第四列：源表
-
-            # 生成 DELETE 语句
+            target_table = row[0]
+            fields = row[1].split(',')
+            increment_field = row[2]
+            source_table = row[3]
             delete_statement = (
                 f"--------- {target_table} --------- \n"
                 f"DELETE FROM {target_table}  \n"
                 f"WHERE {increment_field} IN (SELECT {increment_field} FROM {source_table});"
             )
-
-            # 生成 INSERT 语句，字段换行
-            formatted_fields = ',\n    '.join(fields)  # 将字段换行格式化
+            formatted_fields = ',\n    '.join(fields)
             insert_statement = (
                 f"INSERT INTO {target_table} \n (\n    {formatted_fields}\n)\n"
                 f"SELECT \n    {formatted_fields}\n"
                 f"FROM {source_table}; \n"
             )
-
             del_list.append(delete_statement)
             del_list.append(insert_statement)
         return del_list
@@ -147,28 +142,27 @@ def bulk_merge(path):
         return merge_list
 
 
-def download_button(button_name: str, file_path, file_type: str) -> None:
+def download_button(button_name: str, file_path: str, file_type: str) -> None:
+    mime_types = {
+        'xlsx': "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        'zip': "application/zip",
+        'json': "application/json"
+    }
     try:
         with open(file_path, "rb") as file:
             file_bytes = file.read()
-        if file_type in ['xlsx', 'zip', 'json']:
-            if file_type == 'xlsx':
-                mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            elif file_type == 'zip':
-                mime_type = "application/zip"
-            elif file_type == 'json':
-                mime_type = "application/json"
-            else:
-                st.error(f"file_type: {file_type}. Unsupported file type.")
-                mime_type = "text/plain"
+
+        mime_type = mime_types.get(file_type, "text/plain")
+
+        if mime_type == "text/plain":
+            st.error(f"file_type: {file_type}. Unsupported file type.")
+        else:
             st.download_button(
                 label=button_name,
                 data=file_bytes,
                 file_name=file_path,
                 mime=mime_type
             )
-        else:
-            st.error(f"file_type: {file_type}. Unsupported file type.")
     except FileNotFoundError:
         st.error(f"File not found: {file_path}")
 
@@ -195,10 +189,6 @@ def bulk_update(self):
 
 
 def sql_formatted(sql_list):
-    # list = []
-    # for sql in sql_list:
-    #     formatted_sql = sqlparse.format(sql,reindent=True,keyword_case='upper')
-    #     list.append(formatted_sql)
     cleaned_statements = [stmt.strip() for stmt in sql_list if stmt.strip()]
     statement = "\n".join(cleaned_statements)
     return statement
@@ -430,21 +420,19 @@ if __name__ == "__main__":
 
     elif page == "Mapping":
         st.header("Mapping页面")
-        COLS_NUM = 4
-        MAX_TEMP_FILES = 10
         uploaded_file = st.session_state.uploaded_file
         df = pd.read_excel(uploaded_file, sheet_name='mapping')
-        df['derive_desc'] = df['derive_desc'].fillna('None')
-        json_data = df.to_dict(orient='records')
+        df['derive_desc'].fillna('None', inplace=True)
         start_id = st.number_input("Input Start Number:  :rainbow[[id]]", value=1,
                                    placeholder="Type a number...", step=1)
+        json_data = df.to_dict(orient='records')
         for index, item in enumerate(json_data, start=start_id):
             item["id"] = str(index)
-        json_str = json.dumps(json_data, indent=4)
         st.download_button(
             label="Download JSON",
-            data=json_str,
+            data=json.dumps(json_data, indent=4),
             file_name="output.json",
             mime="application/json"
         )
         st.json(json_data)
+
