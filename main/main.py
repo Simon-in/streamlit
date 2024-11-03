@@ -204,18 +204,19 @@ def download_button(button_name: str, file_path, file_type: str) -> None:
 def bulk_create(path):
     df = pd.read_excel(path, sheet_name='create')
     create_statements = {}
-    create_list = []
-    for index, row in df.iterrows():
-        table__ = row[0]
-        column__ = row[1]
-        type__ = row[2]
-        if table__ not in create_statements:
-            create_statements[table__] = []
-        create_statements[table__].append(f"{column__} {type__}")
-    for table_, column_ in create_statements.items():
-        columns_definition = ",".join(column_)
-        create_ = f"CREATE TABLE {table_} ({columns_definition});"
-        create_list.append(create_)
+
+    # 通过 iterrows 构建创建语句的字典
+    for _, row in df.iterrows():
+        table = row[0]
+        column = row[1]
+        type_ = row[2]
+        create_statements.setdefault(table, []).append(f"{column} {type_}")
+
+    # 生成 CREATE TABLE 语句
+    create_list = [
+        f"CREATE TABLE {table} ({', '.join(columns)});"
+        for table, columns in create_statements.items()
+    ]
     return create_list
 
 
