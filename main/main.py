@@ -379,7 +379,7 @@ if __name__ == "__main__":
         env = st.text_input("请输入env")
         state_machine_name = st.text_input("请输入step function名称")
         if uploaded_file is not None:
-            df = pd.read_excel(uploaded_file)
+            df = pd.read_excel(uploaded_file, sheet_name='sheet1')
             dy_statements = {}
             dy_list = []
             for index, row in df.iterrows():
@@ -389,35 +389,35 @@ if __name__ == "__main__":
                     dy_statements[table] = []
                 dy_statements[table].append(f"{column}")
             for k, v in dy_statements.items():
-                dy_json = '{ \n' \
-                          f'"domain":"{domain}", \n' \
-                          f'"entity":"{k}",\n' \
-                          f'"delimiter": ",",\n' \
-                          f'"file_inzip_pattern": "",\n' \
-                          f'"file_inzip_suffix": "",\n' \
-                          f'"is_archive": "N",\n' \
-                          f'"is_exchange_merge": "false",\n' \
-                          f'"is_header": "true",\n' \
-                          f'"is_signal_file": "false",\n' \
-                          f'"is_soft_fail": "true",\n' \
-                          f'"landing_file_format": "csv",\n' \
-                          f'"merge_order_cols": "",\n' \
-                          f'"merge_order_sc": "desc",\n' \
-                          f'"primary_keys": "",\n' \
-                          f'"redshift_enriched_post_job": "truncate table enriched_em.staging_{k}",\n' \
-                          f'"salesforce_identifier": "{env}",\n' \
-                          f'"salesforce_name": "{k}",\n' \
-                          f'"skip_row": "0",\n' \
-                          f'"source_sensor_poke_interval": "60",\n' \
-                          f'"source_sensor_retry_time": "1",\n' \
-                          f'"source_system": "salesforce",\n' \
-                          f'"sql_query": "select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{",".join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",\n' \
-                          f'"standard_columns": "id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{",".join(v)}",\n' \
-                          f'"state_machine_name": "{state_machine_name}",\n' \
-                          f'"time_delta": "0*60",\n' \
-                          f'"use_cols": ""\n' \
-                          '},\n'
-                dy_list.append(dy_json)
+                dy_dict = {
+                    "domain": domain,
+                    "entity": k,
+                    "delimiter": ",",
+                    "file_inzip_pattern": "",
+                    "file_inzip_suffix": "",
+                    "is_archive": "N",
+                    "is_exchange_merge": "false",
+                    "is_header": "true",
+                    "is_signal_file": "false",
+                    "is_soft_fail": "true",
+                    "landing_file_format": "csv",
+                    "merge_order_cols": "",
+                    "merge_order_sc": "desc",
+                    "primary_keys": "",
+                    "redshift_enriched_post_job": f"truncate table enriched_em.staging_{k}",
+                    "salesforce_identifier": env,
+                    "salesforce_name": k,
+                    "skip_row": "0",
+                    "source_sensor_poke_interval": "60",
+                    "source_sensor_retry_time": "1",
+                    "source_system": "salesforce",
+                    "sql_query": f"select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",
+                    "standard_columns": f"id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)}",
+                    "state_machine_name": state_machine_name,
+                    "time_delta": "0*60",
+                    "use_cols": ""
+                }
+                dy_list.append(dy_dict)
             json_str = json.dumps(dy_list, indent=4)
             st.json(json_str)
             st.download_button(
