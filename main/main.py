@@ -12,9 +12,8 @@ def bulk_select(path, table, column):
         df = pd.read_excel(path, sheet_name='select')
         se_list = []
         for index, row in df.iterrows():
-            target_table = row[0]  # 第一列：目标表名
+            target_table = row[0]
             fields = row[1]
-            # formatted_fields = ',\n    '.join(fields)  # 将字段换行格式化
             select_statements = (
                 f"SELECT {fields} FROM {target_table};"
             )
@@ -300,6 +299,18 @@ if __name__ == "__main__":
             sample_image = Image.open("main/image/truncate.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.session_state.uploaded_file
+            truncate_sql = bulk_truncate(uploaded_file, None)
+            sql = sql_formatted(truncate_sql)
+            st.write(f"语句")
+            st.code(sql, language='sql')
+            st.download_button(
+                label="Download sql",
+                data=sql,
+                file_name="truncate.sql",
+                mime="application/sql"
+            )
+        elif page_1 == "全删全插":
+            uploaded_file = st.session_state.uploaded_file
             a = 1
             truncate_sql = bulk_truncate(uploaded_file, a)
             sql = sql_formatted(truncate_sql)
@@ -311,8 +322,6 @@ if __name__ == "__main__":
                 file_name="truncate.sql",
                 mime="application/sql"
             )
-        elif page_1 == "全删全插":
-            pass
 
     elif page == "UPDATE":  # 暂时没有想到批量化
         st.header("UPDATE页面")
