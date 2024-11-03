@@ -116,7 +116,6 @@ def bulk_truncate(path, a):
 def bulk_merge(path):
     if path is not None:
         df = pd.read_excel(path, sheet_name='merge')
-        df_list = []
         merge_list = []
         for index, row in df.iterrows():
             target_table = row[0]
@@ -124,24 +123,27 @@ def bulk_merge(path):
             uniqueid = row[2]
             source_table = row[3]
             source_column = row[4]
+
+            # 假设 target_column 和 source_column 是列表或可以转为列表的对象
             formatted_fields_target = ',\n    '.join(target_column)  # 将字段换行格式化
             formatted_fields_source = ',\n    '.join(source_column)  # 将字段换行格式化
-            mrege_statement = (
-                        f"--------- {target_table} --------- \n"
-                        f" MERGE INTO {target_table} \n"
-                        f" USING {source_table} AS SOURCE \n"
-                        f" ON {target_table.split('.')[1]}.{uniqueid} = SOURCE.{uniqueid} \n"
-                        f" WHEN MATCHED THEN \n"
-                        f" UPDATE SET \n"
-                        f" {formatted_fields_target} = SOURCE.{formatted_fields_source} \n"
-                        f" WHEN NOT MATCHED THEN \n"
-                        f" INSERT("
-                        f" {formatted_fields_target} \n"
-                        f") \n"
-                        f" VALUES("
-                        f" {formatted_fields_source} \n"
-                        f"); \n"
-                    )
+
+            merge_statement = (
+                f"--------- {target_table} --------- \n"
+                f"MERGE INTO {target_table} \n"
+                f"USING {source_table} AS SOURCE \n"
+                f"ON {target_table.split('.')[1]}.{uniqueid} = SOURCE.{uniqueid} \n"
+                f"WHEN MATCHED THEN \n"
+                f"    UPDATE SET \n"
+                f"    {formatted_fields_target} = SOURCE.{formatted_fields_source} \n"
+                f"WHEN NOT MATCHED THEN \n"
+                f"    INSERT (\n"
+                f"    {formatted_fields_target} \n"
+                f"    ) \n"
+                f"VALUES (\n"
+                f"    {formatted_fields_source} \n"
+                f"    ); \n"
+            )
         merge_list.append(mrege_statement)
         return merge_list
 
