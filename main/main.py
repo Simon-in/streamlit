@@ -107,10 +107,10 @@ def bulk_truncate(path, a):
                     f"TRUNCATE TABLE {table_};\n"
                     f"INSERT INTO {table_}\n"
                     f"(\n"
-                    f"{columns_definition}\n"
+                    f"  {columns_definition}\n"
                     f")\n"
                     f"SELECT\n"
-                    f"{columns_definition}\n"
+                    f"  {columns_definition}\n"
                     f"FROM {source_table};"
             )
             trun_list.append(trun_)
