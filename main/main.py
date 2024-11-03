@@ -87,35 +87,29 @@ def bulk_truncate(path, a):
     if path is not None and a is not None:
         df = pd.read_excel(path, sheet_name='truncate')
         trun_list = []
-        trun_statements = {}
         for index, row in df.iterrows():
             target_table = row[0]
             target_column = row[1].split(',')
             source_table = row[2]
-            if target_table not in trun_statements:
-                trun_statements[target_table] = {
-                    'columns': [],
-                    'source_table': source_table  # 存储对应的源表
-                }
-            # 添加列名到对应的表
-            trun_statements[target_table]['columns'].append(target_column)
         # 生成 TRUNCATE 和 INSERT 语句
-        for table_, details in trun_statements.items():
-            columns = details['columns']
-            source_table = details['source_table']
-            columns_definition = ",\n    ".join(columns)  # 在列名之间换行
-            trun_ = (
-                    f"--------- {table_} --------- \n"
-                    f"TRUNCATE TABLE {table_};\n"
-                    f"INSERT INTO {table_}\n"
+            truncate_statement = (
+                f"--------- {target_table} --------- \n"
+                f"TRUNCATE TABLE {target_table};  \n"
+            )
+
+            # 生成 INSERT 语句，字段换行
+            formatted_fields = ',\n    '.join(target_column)  # 将字段换行格式化
+            insert_statement = (
+                f"INSERT INTO {target_table}\n"
                     f"(\n"
-                    f"   {columns_definition}\n"
+                    f"   {formatted_fields}\n"
                     f")\n"
                     f"SELECT\n"
-                    f"   {columns_definition}\n"
+                    f"   {formatted_fields}\n"
                     f"FROM {source_table};"
             )
-            trun_list.append(trun_)
+            trun_list.append(truncate_statement)
+            trun_list.append(insert_statement)
         return trun_list
 
 
