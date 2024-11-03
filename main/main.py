@@ -93,11 +93,16 @@ def bulk_truncate(path, a):
             target_column = row[1]
             source_table = row[2]
             if target_table not in trun_statements:
-                trun_statements[target_table] = []
+                trun_statements[target_table] = {
+                    'columns': [],
+                    'source_table': source_table  # 存储对应的源表
+                }
             # 添加列名到对应的表
-            trun_statements[target_table].append(target_column)
+            trun_statements[target_table]['columns'].append(target_column)
         # 生成 TRUNCATE 和 INSERT 语句
-        for table_, columns in trun_statements.items():
+        for table_, details in trun_statements.items():
+            columns = details['columns']
+            source_table = details['source_table']
             columns_definition = ",\n    ".join(columns)  # 在列名之间换行
             trun_ = (
                     f"--------- {table_} --------- \n"
