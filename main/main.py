@@ -51,6 +51,7 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
 
             # 生成 DELETE 语句
             delete_statement = (
+                f"--------- {target_table} --------- \n"
                 f"DELETE FROM {target_table}  \n"
                 f"WHERE {increment_field} IN (SELECT {increment_field} FROM {source_table});"
             )
@@ -196,6 +197,7 @@ def bulk_create(path):
         create_statements[table].append(f"{column} {data_type}")
     sql_statements = []
     for table, columns in create_statements.items():
+        sql_statements.append(f"--------- {table} --------- \n")
         sql_statements.append(f"CREATE TABLE {table} (\n    " + ",\n    ".join(columns) + "\n);")
     return sql_statements
 
