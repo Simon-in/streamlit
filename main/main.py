@@ -144,7 +144,7 @@ def bulk_merge(path):
                 f"    {formatted_fields_source} \n"
                 f"    ); \n"
             )
-        merge_list.append(mrege_statement)
+            merge_list.append(merge_statement)
         return merge_list
 
 
