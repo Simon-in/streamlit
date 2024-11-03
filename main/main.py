@@ -49,7 +49,7 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
 
             # 生成 DELETE 语句
             delete_statement = (
-                f"DELETE FROM {target_table} "
+                f"DELETE FROM {target_table}  \n"
                 f"WHERE {increment_field} IN (SELECT {increment_field} FROM {source_table});"
             )
 
@@ -57,7 +57,8 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
             formatted_fields = ',\n    '.join(fields)  # 将字段换行格式化
             insert_statement = (
                 f"INSERT INTO {target_table} (\n    {formatted_fields}\n) "
-                f"SELECT \n    {formatted_fields} FROM {source_table};"
+                f"SELECT \n    {formatted_fields}  \n"
+                f"FROM {source_table};"
             )
 
             del_list.append(delete_statement)
