@@ -98,7 +98,7 @@ def bulk_truncate(path, a):
             trun_statements[target_table].append(target_column)
         # 生成 TRUNCATE 和 INSERT 语句
         for table_, columns in trun_statements.items():
-            columns_definition = ",\n   ".join(columns)
+            columns_definition = ",\n    ".join(columns)  # 在列名之间换行
             trun_ = (
                     f"--------- {table_} --------- \n"
                     f"TRUNCATE TABLE {table_};\n"
