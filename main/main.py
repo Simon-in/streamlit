@@ -12,7 +12,7 @@ def bulk_select(path, table, column):
         df = pd.read_excel(path, sheet_name='select')
         table_field_dict = dict(zip(df.iloc[:, 0], df.iloc[:, 1]))
         select_statements = [
-            f"SELECT {field} FROM {table};"
+            f"SELECT {',\n    '.join(field)} FROM {table};"
             for table, field in table_field_dict.items()
         ]
         return select_statements
