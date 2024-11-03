@@ -90,7 +90,7 @@ def bulk_truncate(path, a):
         trun_statements = {}
         for index, row in df.iterrows():
             target_table = row[0]
-            target_column = row[1]
+            target_column = row[1].split(',')
             source_table = row[2]
             if target_table not in trun_statements:
                 trun_statements[target_table] = {
@@ -101,7 +101,7 @@ def bulk_truncate(path, a):
             trun_statements[target_table]['columns'].append(target_column)
         # 生成 TRUNCATE 和 INSERT 语句
         for table_, details in trun_statements.items():
-            columns = details['columns'].split(',')
+            columns = details['columns']
             source_table = details['source_table']
             columns_definition = ",\n    ".join(columns)  # 在列名之间换行
             trun_ = (
