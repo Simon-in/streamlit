@@ -46,9 +46,9 @@ def bulk_insert(path):
         df_list.append(df_dict)
     for info in df_list:
         insert_statement = f"INSERT INTO {info.get('table')} (\n" + \
-                           f"    \n".join(f"{column}" for column in info.get('column')) + \
+                           ",\n".join(f"    {column}" for column in info.get('column')) + \
                            f"\n) VALUES (\n" + \
-                           f"    \n".join(f"{value}" for value in info.get('values')) + \
+                           ",\n".join(f"    {value}" for value in info.get('values')) + \
                            f"\n);"
         isrt_list.append(insert_statement)
     return isrt_list
