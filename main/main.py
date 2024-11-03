@@ -1,23 +1,37 @@
 import json
-import sqlparse
 import pandas as pd
 import streamlit as st
 from PIL import Image
 
 
 def bulk_select(path, table, column):
+    # if not path:
+    #     select_statement = f"SELECT {''.join(column)} FROM {table};"
+    #     return select_statement
+    # elif path:
+    #     df = pd.read_excel(path, sheet_name='select')
+    #     table_field_dict = dict(zip(df.iloc[:, 0], df.iloc[:, 1]))
+    #     select_statement = []
+    #     for table, field in table_field_dict.items():
+    #         sql = f"SELECT {field}  \n" \
+    #               f"FROM {table}; "
+    #         select_statement.append(sql)
+    #     return select_statement
     if not path:
-        select_statement = f"SELECT {''.join(column)} FROM {table};"
+        # 当没有提供 path 时，直接构建 SELECT 语句
+        select_statement = f"SELECT {', '.join(column)} FROM {table};"
         return select_statement
-    elif path:
+    else:
+        # 当提供 path 时，从 Excel 读取表和字段信息
         df = pd.read_excel(path, sheet_name='select')
         table_field_dict = dict(zip(df.iloc[:, 0], df.iloc[:, 1]))
-        select_statement = []
-        for table, field in table_field_dict.items():
-            sql = f"SELECT {field}  \n" \
-                  f"FROM {table}; "
-            select_statement.append(sql)
-        return select_statement
+
+        # 使用列表推导式生成 SQL 语句
+        select_statements = [
+            f"SELECT {field} FROM {table};"
+            for table, field in table_field_dict.items()
+        ]
+        return select_statements
 
 
 def bulk_insert(path):
