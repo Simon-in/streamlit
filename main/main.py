@@ -83,32 +83,35 @@ def bulk_truncate(path, a):
             )
             trun_list.append(truncate_statement)
         return trun_list
-    if path is not None and a:
+    if path is not None and a == 1:
         df = pd.read_excel(path, sheet_name='truncate')
-        trun_statements = {}
         trun_list = []
+        trun_statements = {}
         for index, row in df.iterrows():
             target_table = row[0]
             target_column = row[1]
             source_table = row[2]
             source_column = row[3]
+            # 确保目标表和源表都在字典中初始化
             if target_table not in trun_statements:
                 trun_statements[target_table] = []
+            if source_table not in trun_statements:
                 trun_statements[source_table] = []
-            trun_statements[target_table].append(f"{target_column}")
-            trun_statements[source_table].append(f"{source_column}")
-        for table_, column_ in trun_statements.items():
-            columns_definition = ",".join(column_)
+            # 添加列名到对应的表
+            trun_statements[target_table].append(target_column)
+            trun_statements[source_table].append(source_column)
+        # 生成 TRUNCATE 和 INSERT 语句
+        for table_, columns in trun_statements.items():
+            columns_definition = ", ".join(columns)
             trun_ = f"""
-                    TRUNCATE TABLE {table_};
-                    INSERT INTO {table_}
-                    (
-                        {columns_definition}
-                    )
-                    SELECT 
-                        {columns_definition}
-                    FROM {table_};
-    """
+                TRUNCATE TABLE {table_};
+                INSERT INTO {table_} (
+                    {columns_definition}
+                )
+                SELECT 
+                    {columns_definition}
+                FROM {source_table};  -- 假设你是从 source_table 中插入
+            """
             trun_list.append(trun_)
         return trun_list
 
