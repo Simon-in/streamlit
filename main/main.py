@@ -205,19 +205,19 @@ def bulk_create(path):
     df = pd.read_excel(path, sheet_name='create')
     create_statements = {}
 
-    # 通过 iterrows 构建创建语句的字典
     for _, row in df.iterrows():
         table = row[0]
         column = row[1]
-        type_ = row[2]
-        create_statements.setdefault(table, []).append(f"{column} {type_}")
+        data_type = row[2]
+        if table not in create_statements:
+            create_statements[table] = []
+        create_statements[table].append(f"{column} {data_type}")
 
-    # 生成 CREATE TABLE 语句
-    create_list = [
-        f"CREATE TABLE {table} ({', '.join(columns)});"
-        for table, columns in create_statements.items()
-    ]
-    return create_list
+    sql_statements = []
+    for table, columns in create_statements.items():
+        sql_statements.append(f"CREATE TABLE {table} (\n    " + ",\n    ".join(columns) + "\n);")
+
+    return "\n".join(sql_statements)
 
 
 def bulk_update(self):
