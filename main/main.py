@@ -102,16 +102,17 @@ def bulk_truncate(path, a):
             trun_statements[source_table].append(source_column)
         # 生成 TRUNCATE 和 INSERT 语句
         for table_, columns in trun_statements.items():
-            columns_definition = ", ".join(columns)
-            trun_ = f"""
-                TRUNCATE TABLE {table_};
-                INSERT INTO {table_} (
-                    {columns_definition}
-                )
-                SELECT 
-                    {columns_definition}
-                FROM {source_table};  -- 假设你是从 source_table 中插入
-            """
+            columns_definition = ",\n   ".join(columns)
+            trun_ = (
+                    f"TRUNCATE TABLE {table_};\n"
+                    f"INSERT INTO {table_}\n"
+                    f"(\n"
+                    f"{columns_definition}\n"
+                    f")\n"
+                    f"SELECT\n"
+                    f"{columns_definition}\n"
+                    f"FROM {source_table};"
+            )
             trun_list.append(trun_)
         return trun_list
 
