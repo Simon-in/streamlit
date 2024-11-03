@@ -45,13 +45,7 @@ def bulk_insert(path):
         df_dict['values'] = df.iloc[i, 2]
         df_list.append(df_dict)
     for info in df_list:
-        insert_statement = (
-            f"INSERT INTO {info.get('table')}  \n"
-            f" ({info.get('column')})  \n"
-            f"VALUES ("
-            f"{info.get('values')}"
-            f");"
-        )
+        insert_statement = f"INSERT INTO {info.get('table')} (\n    {info.get('column')} \n) VALUES (\n    {info.get('values')} \n);"
         isrt_list.append(insert_statement)
     return isrt_list
 
@@ -204,7 +198,6 @@ def download_button(button_name: str, file_path, file_type: str) -> None:
 def bulk_create(path):
     df = pd.read_excel(path, sheet_name='create')
     create_statements = {}
-
     for _, row in df.iterrows():
         table = row[0]
         column = row[1]
@@ -212,11 +205,9 @@ def bulk_create(path):
         if table not in create_statements:
             create_statements[table] = []
         create_statements[table].append(f"{column} {data_type}")
-
     sql_statements = []
     for table, columns in create_statements.items():
         sql_statements.append(f"CREATE TABLE {table} (\n    " + ",\n    ".join(columns) + "\n);")
-
     return sql_statements
 
 
