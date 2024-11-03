@@ -14,9 +14,9 @@ def bulk_select(path, table, column):
         for index, row in df.iterrows():
             target_table = row[0]  # 第一列：目标表名
             fields = row[1].split(',')  # 第二列：字段字符串，按逗号分隔
-            formatted_fields = ',\n    '.join(fields)  # 将字段换行格式化
+            # formatted_fields = ',\n    '.join(fields)  # 将字段换行格式化
             select_statements = (
-                f"SELECT {formatted_fields} FROM {target_table};"
+                f"SELECT {fields} FROM {target_table};"
             )
             se_list.append(select_statements)
         return se_list
