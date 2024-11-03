@@ -121,10 +121,12 @@ def bulk_merge(path):
             target_table = row[0]
             target_column = row[1].split(',')
             uniqueid = row[2]
+            source_table = row[3]
             source_column = row[4].split(',')
             formatted_fields_target = ',\n    '.join(target_column)  # 将字段换行格式化
-            for info in formatted_fields_target:
-                up_st = f"{info} = SOURCE.{info} \n"
+            formatted_fields_source = ',\n    '.join(source_column)  # 将字段换行格式化
+            update_set = ',\n    '.join(
+                [f"{target_column[i]} = SOURCE.{source_column[i]}" for i in range(len(target_column))])
             merge_statement = (
                 f"--------- {target_table} --------- \n"
                 f"MERGE INTO {target_table} \n"
@@ -132,13 +134,13 @@ def bulk_merge(path):
                 f"ON {target_table.split('.')[1]}.{uniqueid} = SOURCE.{uniqueid} \n"
                 f"WHEN MATCHED THEN \n"
                 f"    UPDATE SET \n"
-                f"    {up_st}"
+                f"    {update_set} \n"
                 f"WHEN NOT MATCHED THEN \n"
                 f"    INSERT (\n"
                 f"    {formatted_fields_target} \n"
                 f"    ) \n"
                 f"VALUES (\n"
-                f"    {formatted_fields_target} \n"
+                f"    {formatted_fields_source} \n"
                 f"    ); \n"
             )
             merge_list.append(merge_statement)
