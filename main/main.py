@@ -119,14 +119,14 @@ def bulk_merge(path):
         merge_list = []
         for index, row in df.iterrows():
             target_table = row[0]
-            target_column = row[1]
+            target_column = row[1].split(',')
             uniqueid = row[2]
             source_table = row[3]
-            source_column = row[4]
+            source_column = row[4].split(',')
 
             # 假设 target_column 和 source_column 是列表或可以转为列表的对象
-            formatted_fields_target = '\n    '.join(target_column)  # 将字段换行格式化
-            formatted_fields_source = '\n    '.join(source_column)  # 将字段换行格式化
+            formatted_fields_target = ',\n    '.join(target_column)  # 将字段换行格式化
+            formatted_fields_source = ',\n    '.join(source_column)  # 将字段换行格式化
 
             merge_statement = (
                 f"--------- {target_table} --------- \n"
