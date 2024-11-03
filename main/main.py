@@ -61,7 +61,7 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
             insert_statement = (
                 f"INSERT INTO {target_table} \n (\n    {formatted_fields}\n)\n"
                 f"SELECT \n    {formatted_fields}\n"
-                f"FROM {source_table};"
+                f"FROM {source_table}; \n"
             )
 
             del_list.append(delete_statement)
@@ -102,11 +102,11 @@ def bulk_truncate(path, a):
             insert_statement = (
                 f"INSERT INTO {target_table}\n"
                     f"(\n"
-                    f"   {formatted_fields}\n"
+                    f"    {formatted_fields}\n"
                     f")\n"
                     f"SELECT\n"
-                    f"   {formatted_fields}\n"
-                    f"FROM {source_table};"
+                    f"    {formatted_fields}\n"
+                    f"FROM {source_table}; \n"
             )
             trun_list.append(truncate_statement)
             trun_list.append(insert_statement)
@@ -118,38 +118,31 @@ def bulk_merge(path):
         df = pd.read_excel(path, sheet_name='merge')
         df_list = []
         merge_list = []
-        up_list = []
-        for i in range(df.__len__()):
-            df_dict = {}
-            df_dict['target_table'] = df.iloc[i, 0]
-            df_dict['target_column'] = df.iloc[i, 1]
-            df_dict['uniqueid'] = df.iloc[i, 2]
-            df_dict['source_table'] = df.iloc[i, 3]
-            df_dict['source_column'] = df.iloc[i, 4]
-            df_list.append(df_dict)
-        for info in df_list:
-            target_columns = info.get('target_column').split(",")
-            up_list = []
-            for column in target_columns:
-                up_statement = f"{column} = source.{column}"
-                up_list.append(up_statement)
-            update_set_clause = ", ".join(up_list)
+        for index, row in df.iterrows():
+            target_table = row[0]
+            target_column = row[1]
+            uniqueid = row[2]
+            source_table = row[3]
+            source_column = row[4]
+            formatted_fields_target = ',\n    '.join(target_column)  # 将字段换行格式化
+            formatted_fields_source = ',\n    '.join(source_column)  # 将字段换行格式化
             mrege_statement = (
-                    f" merge into {info.get('target_table')} \n"
-                    f" using {info.get('source_table')} as source \n"
-                    f" on {info.get('target_table').split('.')[1]}.{info.get('uniqueid')} = source.{info.get('uniqueid')} \n"
-                    f" when matched then \n"
-                    f" update set \n"
-                    f" {update_set_clause}  \n"
-                    f" when not matched then \n"
-                    f" insert("
-                    f" {info.get('target_column')}"
-                    f") \n"
-                    f" values("
-                    f" {info.get('source_column')}"
-                    f");"
-                )
-            merge_list.append(mrege_statement)
+                        f"--------- {target_table} --------- \n"
+                        f" MERGE INTO {target_table} \n"
+                        f" USING {source_table} AS SOURCE \n"
+                        f" ON {target_table.split('.')[1]}.{uniqueid} = SOURCE.{uniqueid} \n"
+                        f" WHEN MATCHED THEN \n"
+                        f" UPDATE SET \n"
+                        f" {formatted_fields_target} = SOURCE.{formatted_fields_source} \n"
+                        f" WHEN NOT MATCHED THEN \n"
+                        f" INSERT("
+                        f" {formatted_fields_target} \n"
+                        f") \n"
+                        f" VALUES("
+                        f" {formatted_fields_source} \n"
+                        f"); \n"
+                    )
+        merge_list.append(mrege_statement)
         return merge_list
 
 
