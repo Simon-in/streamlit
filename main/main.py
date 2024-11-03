@@ -10,17 +10,20 @@ def bulk_select(path, table, column):
         return select_statement
     else:
         df = pd.read_excel(path, sheet_name='select')
-        table_field_dict = dict(zip(df.iloc[:, 0], df.iloc[:, 1]))
-        select_statements = [
-            f"SELECT {',\n    '.join(field)} FROM {table};"
-            for table, field in table_field_dict.items()
-        ]
-        return select_statements
+        se_list = []
+        for index, row in df.iterrows():
+            target_table = row[0]  # 第一列：目标表名
+            fields = row[1].split(',')  # 第二列：字段字符串，按逗号分隔
+            formatted_fields = ',\n    '.join(fields)  # 将字段换行格式化
+            select_statements = (
+                f"SELECT {formatted_fields} FROM {target_table};"
+            )
+            se_list.append(select_statements)
+        return se_list
 
 
 def bulk_insert(path):
     df = pd.read_excel(path, sheet_name='insert')
-
     isrt_list = [
         f"INSERT INTO {row[0]} ({row[1]}) VALUES ({row[2]});"
         for row in df.itertuples(index=False)
@@ -66,7 +69,7 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
         return del_list
 
 
-def bulk_truncate(path):
+def bulk_truncate(path, a):
     if path is not None:
         df = pd.read_excel(path, sheet_name='truncate')
         df_list = []
@@ -81,7 +84,7 @@ def bulk_truncate(path):
             )
             trun_list.append(truncate_statement)
         return trun_list
-    else:
+    if path is not None and a:
         df = pd.read_excel(path, sheet_name='truncate')
         trun_statements = {}
         trun_list = []
@@ -297,7 +300,8 @@ if __name__ == "__main__":
             sample_image = Image.open("main/image/truncate.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.session_state.uploaded_file
-            truncate_sql = bulk_truncate(uploaded_file, None)
+            a = 1
+            truncate_sql = bulk_truncate(uploaded_file, a)
             sql = sql_formatted(truncate_sql)
             st.write(f"语句")
             st.code(sql, language='sql')
