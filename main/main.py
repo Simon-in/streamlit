@@ -69,7 +69,7 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
 
 
 def bulk_truncate(path, a):
-    if path is not None:
+    if path is not None and a is None:
         df = pd.read_excel(path, sheet_name='truncate')
         df_list = []
         trun_list = []
@@ -83,7 +83,7 @@ def bulk_truncate(path, a):
             )
             trun_list.append(truncate_statement)
         return trun_list
-    if path is not None and a == 1:
+    if path is not None and a is not None:
         df = pd.read_excel(path, sheet_name='truncate')
         trun_list = []
         trun_statements = {}
