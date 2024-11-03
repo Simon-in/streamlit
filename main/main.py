@@ -13,7 +13,7 @@ def bulk_select(path, table, column):
         se_list = []
         for index, row in df.iterrows():
             target_table = row[0]  # 第一列：目标表名
-            fields = row[1].split(',')  # 第二列：字段字符串，按逗号分隔
+            fields = row[1]
             # formatted_fields = ',\n    '.join(fields)  # 将字段换行格式化
             select_statements = (
                 f"SELECT {fields} FROM {target_table};"
