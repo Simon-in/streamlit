@@ -45,7 +45,8 @@ def bulk_insert(path):
         df_dict['values'] = df.iloc[i, 2]
         df_list.append(df_dict)
     for info in df_list:
-        info = info.replace(",", "")
+        info['values'] = [value.replace(",", "") for value in info.get('values', [])]
+        info['column'] = [column.replace(",", "") for column in info.get('column', [])]
         insert_statement = f"INSERT INTO {info.get('table')} (\n" + \
                            ",\n".join(f"    {column}" for column in info.get('column')) + \
                            f"\n) VALUES (\n" + \
