@@ -30,17 +30,17 @@ def bulk_insert(path):
 
 def bulk_delete(path, target_table, column, uniqueid, source_table):
     if path is None:
-        delete_statement = f"delete from {target_table} \n" \
+        del_list = f"delete from {target_table} \n" \
                            f" where {uniqueid} in (" \
                            f"select {uniqueid} from {source_table})  \n" \
                            f"insert into {target_table} \n" \
                            f" ({column})  \n" \
                            f"select {column} \n" \
                            f" from {source_table};"
-        return delete_statement
+        return del_list
     else:
         del_list = []
-
+        df = pd.read_excel(path, sheet_name='delete')
         for index, row in df.iterrows():
             target_table = row[0]  # 第一列：目标表名
             fields = row[1].split(',')  # 第二列：字段字符串，按逗号分隔
@@ -65,7 +65,7 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
         return del_list
 
 
-def bulk_truncate(path, table):
+def bulk_truncate(path):
     if path is not None:
         df = pd.read_excel(path, sheet_name='truncate')
         df_list = []
@@ -132,10 +132,11 @@ def bulk_merge(path):
                 up_list.append(up_statement)
             update_set_clause = ", ".join(up_list)
             mrege_statement = (
-                    f"merge into {info.get('target_table')} \n"
+                    f" merge into {info.get('target_table')} \n"
                     f" using {info.get('source_table')} as source \n"
                     f" on {info.get('target_table').split('.')[1]}.{info.get('uniqueid')} = source.{info.get('uniqueid')} \n"
-                    f" when matched then update set \n"
+                    f" when matched then \n"
+                    f" update set \n"
                     f" {update_set_clause}  \n"
                     f" when not matched then \n"
                     f" insert("
