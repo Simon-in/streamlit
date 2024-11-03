@@ -305,6 +305,8 @@ if __name__ == "__main__":
                 mime="application/sql"
             )
         elif page_1 == "全删全插":
+            sample_image = Image.open("main/image/truncate_1.png")
+            st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.session_state.uploaded_file
             a = 1
             truncate_sql = bulk_truncate(uploaded_file, a)
