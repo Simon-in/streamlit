@@ -217,7 +217,7 @@ def bulk_create(path):
     for table, columns in create_statements.items():
         sql_statements.append(f"CREATE TABLE {table} (\n    " + ",\n    ".join(columns) + "\n);")
 
-    return "\n".join(sql_statements)
+    return sql_statements
 
 
 def bulk_update(self):
