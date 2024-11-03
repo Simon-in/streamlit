@@ -123,11 +123,9 @@ def bulk_merge(path):
             uniqueid = row[2]
             source_table = row[3]
             source_column = row[4].split(',')
-
-            # 假设 target_column 和 source_column 是列表或可以转为列表的对象
             formatted_fields_target = ',\n    '.join(target_column)  # 将字段换行格式化
             formatted_fields_source = ',\n    '.join(source_column)  # 将字段换行格式化
-
+            up_st = f"{formatted_fields_target} = SOURCE.{formatted_fields_source} \n"
             merge_statement = (
                 f"--------- {target_table} --------- \n"
                 f"MERGE INTO {target_table} \n"
@@ -135,7 +133,7 @@ def bulk_merge(path):
                 f"ON {target_table.split('.')[1]}.{uniqueid} = SOURCE.{uniqueid} \n"
                 f"WHEN MATCHED THEN \n"
                 f"    UPDATE SET \n"
-                f"    {formatted_fields_target} = SOURCE.{formatted_fields_source} \n"
+                f"    {up_st}"
                 f"WHEN NOT MATCHED THEN \n"
                 f"    INSERT (\n"
                 f"    {formatted_fields_target} \n"
