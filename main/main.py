@@ -5,28 +5,12 @@ from PIL import Image
 
 
 def bulk_select(path, table, column):
-    # if not path:
-    #     select_statement = f"SELECT {''.join(column)} FROM {table};"
-    #     return select_statement
-    # elif path:
-    #     df = pd.read_excel(path, sheet_name='select')
-    #     table_field_dict = dict(zip(df.iloc[:, 0], df.iloc[:, 1]))
-    #     select_statement = []
-    #     for table, field in table_field_dict.items():
-    #         sql = f"SELECT {field}  \n" \
-    #               f"FROM {table}; "
-    #         select_statement.append(sql)
-    #     return select_statement
     if not path:
-        # 当没有提供 path 时，直接构建 SELECT 语句
         select_statement = f"SELECT {', '.join(column)} FROM {table};"
         return select_statement
     else:
-        # 当提供 path 时，从 Excel 读取表和字段信息
         df = pd.read_excel(path, sheet_name='select')
         table_field_dict = dict(zip(df.iloc[:, 0], df.iloc[:, 1]))
-
-        # 使用列表推导式生成 SQL 语句
         select_statements = [
             f"SELECT {field} FROM {table};"
             for table, field in table_field_dict.items()
@@ -36,17 +20,11 @@ def bulk_select(path, table, column):
 
 def bulk_insert(path):
     df = pd.read_excel(path, sheet_name='insert')
-    df_list = []
-    isrt_list = []
-    for i in range(df.__len__()):
-        df_dict = {}
-        df_dict['table'] = df.iloc[i, 0]
-        df_dict['column'] = df.iloc[i, 1]
-        df_dict['values'] = df.iloc[i, 2]
-        df_list.append(df_dict)
-    for info in df_list:
-        insert_statement = f"INSERT INTO {info.get('table')} ({info.get('column')}) VALUES ({info.get('values')});"
-        isrt_list.append(insert_statement)
+
+    isrt_list = [
+        f"INSERT INTO {row[0]} ({row[1]}) VALUES ({row[2]});"
+        for row in df.itertuples(index=False)
+    ]
     return isrt_list
 
 
@@ -62,26 +40,11 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
         return delete_statement
     else:
         df = pd.read_excel(path, sheet_name='delete')
-        df_list = []
-        del_list = []
-        for i in range(df.__len__()):
-            df_dict = {}
-            df_dict['target_table'] = df.iloc[i, 0]
-            df_dict['column'] = df.iloc[i, 1]
-            df_dict['uniqueid'] = df.iloc[i, 2]
-            df_dict['source_table'] = df.iloc[i, 3]
-            df_list.append(df_dict)
-        for info in df_list:
-            delete_statement = (
-                f"DELETE FROM {info.get('target_table')}  \n"
-                f"WHERE {info.get('uniqueid')} IN ("
-                f"SELECT {info.get('uniqueid')} FROM {info.get('source_table')});  \n"
-                f"INSERT INTO {info.get('table')}  \n"
-                f"({info.get('column')})  \n"
-                f"SELECT {info.get('column')}  \n"
-                f"FROM {info.get('source_table')};"
-            )
-            del_list.append(delete_statement)
+        del_list =  [
+            f"DELETE FROM {row[0]} WHERE {row[2]} IN (SELECT {row[2]} FROM {row[3]});\n"
+            f"INSERT INTO {row[0]} ({row[1]}) SELECT {row[1]} FROM {row[3]};"
+            for row in df.itertuples(index=False)
+        ]
         return del_list
 
 
