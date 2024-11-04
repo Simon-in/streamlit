@@ -44,20 +44,21 @@ def bulk_delete(path, target_table, column, uniqueid, source_table):
         del_list = []
         df = pd.read_excel(path, sheet_name='delete')
         for index, row in df.iterrows():
-            target_table = row[0]
-            fields = row[1].split(',')
-            increment_field = row[2]
-            source_table = row[3]
+            target_domain = row[0]
+            target_table = row[1]
+            fields = row[2].split(',')
+            increment_field = row[3]
+            source_table = row[4]
             delete_statement = (
                 f"--------- {target_table} --------- \n"
-                f"DELETE FROM {target_table}  \n"
+                f"DELETE FROM {target_domain}.{target_table}  \n"
                 f"WHERE {increment_field} IN (SELECT {increment_field} FROM {source_table});"
             )
             formatted_fields = ',\n    '.join(fields)
             insert_statement = (
-                f"INSERT INTO {target_table} \n (\n    {formatted_fields}\n)\n"
+                f"INSERT INTO {target_domain}.{target_table} \n (\n    {formatted_fields}\n)\n"
                 f"SELECT \n    {formatted_fields}\n"
-                f"FROM {source_table}; \n"
+                f"FROM {target_domain}.{source_table}; \n"
             )
             del_list.append(delete_statement)
             del_list.append(insert_statement)
