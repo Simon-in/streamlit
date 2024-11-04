@@ -171,16 +171,17 @@ def bulk_create(path):
     df = pd.read_excel(path, sheet_name='create')
     create_statements = {}
     for _, row in df.iterrows():
-        table = row[0]
-        column = row[1]
-        data_type = row[2]
+        domain = row[0]
+        table = row[1]
+        column = row[2]
+        data_type = row[3]
         if table not in create_statements:
             create_statements[table] = []
         create_statements[table].append(f"{column} {data_type}")
     sql_statements = []
     for table, columns in create_statements.items():
         sql_statements.append(f"--------- {table} --------- \n")
-        sql_statements.append(f"CREATE TABLE {table} (\n    " + ",\n    ".join(columns) + "\n);")
+        sql_statements.append(f"CREATE TABLE {domain}.{table} (\n    " + ",\n    ".join(columns) + "\n);")
     return sql_statements
 
 
