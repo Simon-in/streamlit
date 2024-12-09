@@ -382,7 +382,7 @@ if __name__ == "__main__":
         for k, v in dy_statements.items():
             dy_dict = {
                 "domain": domain,
-                "entity": k,
+                "entity": staging_{k},
                 "delimiter": ",",
                 "file_inzip_pattern": "",
                 "file_inzip_suffix": "",
