@@ -423,6 +423,9 @@ if __name__ == "__main__":
             uploaded_file = st.session_state.uploaded_file
             domain = st.text_input("请输入domain")
             state_machine_name = st.text_input("请输入step function名称")
+            conn_id = st.text_input("请输入conn_id")
+            src_database = st.text_input("请输入src_database")
+            source_system = st.text_input("请输入source_system")
             df = pd.read_excel(uploaded_file, sheet_name='dynamodb')
             dy_statements = {}
             dy_list = []
@@ -436,16 +439,16 @@ if __name__ == "__main__":
                 dy_dict = {
                     "domain": domain,
                     "entity": k,
-                    "conn_id": "phcdp/mssql/content-fusion-q",
+                    "conn_id": conn_id,
                     "customized_load_sql": f"select {','.join(v)} from dbo.{k}",
                     "is_soft_fail": "true",
                     "landing_file_format": "parquet",
                     "load_mode": "customized",
-                    "src_database": "content-fusion-q",
+                    "src_database": src_database,
                     "redshift_enriched_post_job": f"truncate table enriched_prestage_content.{k};",
                     "source_sensor_poke_interval": "60",
                     "source_sensor_retry_time": "5",
-                    "source_system": "mssql_content-fusion-q",
+                    "source_system": source_system,
                     "standard_columns": f"{','.join(v)}",
                     "state_machine_name": state_machine_name,
                     "time_delta": "10*60"
