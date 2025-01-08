@@ -363,7 +363,7 @@ if __name__ == "__main__":
             file_name="merge.sql",
             mime="application/sql"
         )
-        
+
     elif page == "Dynamodb":
         st.header("Dynamodb页面")
         page_1 = st.sidebar.selectbox("选择页面", ["opera2", "fusion", "待定"])
@@ -431,7 +431,7 @@ if __name__ == "__main__":
                 column = row[1]
                 if table not in dy_statements:
                     dy_statements[table] = []
-                    dy_statements[table].append(f"{column}")
+                dy_statements[table].append(f"{column}")
             for k, v in dy_statements.items():
                 dy_dict = {
                     "domain": domain,
