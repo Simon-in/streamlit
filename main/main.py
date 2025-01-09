@@ -416,7 +416,7 @@ if __name__ == "__main__":
             st.download_button(
                 label="Download JSON",
                 data=json_str,
-                file_name="output.json",
+                file_name="dynamodb.json",
                 mime="application/json"
             )
         elif page_1 == "fusion":
@@ -459,7 +459,7 @@ if __name__ == "__main__":
             st.download_button(
                 label="Download JSON",
                 data=json_str,
-                file_name="output.json",
+                file_name="dynamodb.json",
                 mime="application/json"
             )
     elif page == "Mapping":
@@ -475,7 +475,7 @@ if __name__ == "__main__":
         st.download_button(
             label="Download JSON",
             data=json.dumps(json_data, indent=4),
-            file_name="output.json",
+            file_name="mapping.json",
             mime="application/json"
         )
         st.json(json_data)
