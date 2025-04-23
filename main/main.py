@@ -4,14 +4,14 @@ from SQL import sql
 from example import example
 import json
 
-
 if __name__ == "__main__":
     page = st.sidebar.selectbox("选择页面",
                                 ["SQL", "example"])
 
     if page == "SQL":
-        sub_page = st.sidebar.selectbox("选择页面",
-                                    ["主页", "CREATE", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE"])
+
+        sub_page = st.sidebar.selectbox("选择SQL页面",
+                                        ["主页", "CREATE", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE"])
         # , "Dynamodb", "Mapping"
         if sub_page == "主页":
             st.header("欢迎来到主页！")
@@ -21,11 +21,13 @@ if __name__ == "__main__":
                 "你可以从侧面导航栏选择你想进行的操作,\n"
                 "复制sql语句或者下载sql文件"
             )
-            sql.download_button("样例下载", r"main/static/main_static_样例 - Copy.xlsx", 'xlsx')
             uploaded_file = st.file_uploader("上传文件", type=["csv", "txt", "xlsx"])
             if uploaded_file is not None:
                 st.session_state.uploaded_file = uploaded_file
                 st.success("文件上传成功！")
+            sql = sql(uploaded_file)
+            sql.download_button(button_name="样例下载", file_path=r"main/static/sql_example.xlsx",
+                                file_type='xlsx')
         elif sub_page == "CREATE":
             st.header("CREATE页面 ")
             sample_image = Image.open("main/image/create.png")
@@ -179,15 +181,15 @@ if __name__ == "__main__":
             )
 
     elif page == 'example':
-        page = st.sidebar.selectbox("选择示例页面",
-                                    ["主页", "button", "write", "slider", "line_chart", "selectbox"])
-        if page == 'button':
-            example.button()
-        elif page == 'write':
-            example.write()
-        elif page == 'slider':
-            example.slider()
-        elif page == 'line_chart':
-            example.line_chart()
-        elif page == 'selectbox':
-            example.select_box()
+        sub_page = st.sidebar.selectbox("选择示例页面",
+                                        ["主页", "button", "write", "slider", "line_chart", "selectbox"])
+        if sub_page == 'button':
+            example.button(sub_page)
+        elif sub_page == 'write':
+            example.write(sub_page)
+        elif sub_page == 'slider':
+            example.slider(sub_page)
+        elif sub_page == 'line_chart':
+            example.line_chart(sub_page)
+        elif sub_page == 'selectbox':
+            example.select_box(sub_page)
