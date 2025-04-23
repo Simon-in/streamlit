@@ -8,7 +8,7 @@ from datetime import time, datetime
 class example:
     def __init__(self):
         pass
-
+        
     def button(self):
         code = """
         import streamlit as st \n
@@ -192,17 +192,16 @@ class example:
         st.code(code, language='python')
 
 
-if __name__ == '__main__':
-    page = st.sidebar.selectbox("选择示例页面",
-                                ["主页", "button", "write", "slider", "line_chart", "selectbox"])
-    main = main()
-    if page == 'button':
-        main.button()
-    elif page == 'write':
-        main.write()
-    elif page == 'slider':
-        main.slider()
-    elif page == 'line_chart':
-        main.line_chart()
-    elif page == 'selectbox':
-        main.select_box()
+# if __name__ == '__main__':
+#     page = st.sidebar.selectbox("选择示例页面",
+#                                 ["主页", "button", "write", "slider", "line_chart", "selectbox"])
+#     if page == 'button':
+#         example.button()
+#     elif page == 'write':
+#         example.write()
+#     elif page == 'slider':
+#         example.slider()
+#     elif page == 'line_chart':
+#         example.line_chart()
+#     elif page == 'selectbox':
+#         example.select_box()
