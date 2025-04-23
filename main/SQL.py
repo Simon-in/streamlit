@@ -33,12 +33,12 @@ def bulk_insert(path):
 def bulk_delete(path, target_table, column, uniqueid, source_table):
     if path is None:
         del_list = f"delete from {target_table} \n" \
-                           f" where {uniqueid} in (" \
-                           f"select {uniqueid} from {source_table})  \n" \
-                           f"insert into {target_table} \n" \
-                           f" ({column})  \n" \
-                           f"select {column} \n" \
-                           f" from {source_table};"
+                   f" where {uniqueid} in (" \
+                   f"select {uniqueid} from {source_table})  \n" \
+                   f"insert into {target_table} \n" \
+                   f" ({column})  \n" \
+                   f"select {column} \n" \
+                   f" from {source_table};"
         return del_list
     else:
         del_list = []
@@ -87,7 +87,7 @@ def bulk_truncate(path, a):
             target_table = row[0]
             target_column = row[1].split(',')
             source_table = row[2]
-        # 生成 TRUNCATE 和 INSERT 语句
+            # 生成 TRUNCATE 和 INSERT 语句
             truncate_statement = (
                 f"--------- {target_table} --------- \n"
                 f"TRUNCATE TABLE {target_table};  \n"
@@ -97,12 +97,12 @@ def bulk_truncate(path, a):
             formatted_fields = ',\n    '.join(target_column)  # 将字段换行格式化
             insert_statement = (
                 f"INSERT INTO {target_table}\n"
-                    f"(\n"
-                    f"    {formatted_fields}\n"
-                    f")\n"
-                    f"SELECT\n"
-                    f"    {formatted_fields}\n"
-                    f"FROM {source_table}; \n"
+                f"(\n"
+                f"    {formatted_fields}\n"
+                f")\n"
+                f"SELECT\n"
+                f"    {formatted_fields}\n"
+                f"FROM {source_table}; \n"
             )
             trun_list.append(truncate_statement)
             trun_list.append(insert_statement)
@@ -198,9 +198,9 @@ def sql_formatted(sql_list):
 
 if __name__ == "__main__":
     page = st.sidebar.selectbox("选择页面",
-                                ["主页", "CREATE", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE" ])
-                                 # , "Dynamodb", "Mapping"
-                               
+                                ["主页", "CREATE", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE"])
+    # , "Dynamodb", "Mapping"
+
     if page == "主页":
         st.header("欢迎来到主页！")
         st.write('\n')
