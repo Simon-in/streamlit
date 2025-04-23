@@ -1,12 +1,12 @@
 from PIL import Image
 import streamlit as st
 from SQL import sql
-from example import example
+from streamlit_example import example
 import json
 
 if __name__ == "__main__":
     page = st.sidebar.selectbox("选择页面",
-                                ["SQL", "example"])
+                                ["SQL", "streamlit_example"])
 
     if page == "SQL":
 
@@ -180,7 +180,7 @@ if __name__ == "__main__":
                 mime="application/sql"
             )
 
-    elif page == 'example':
+    elif page == 'streamlit_example':
         sub_page = st.sidebar.selectbox("选择示例页面",
                                         ["主页", "button", "write", "slider", "line_chart", "selectbox"])
         if sub_page == 'button':
