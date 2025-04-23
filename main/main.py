@@ -198,7 +198,9 @@ def sql_formatted(sql_list):
 
 if __name__ == "__main__":
     page = st.sidebar.selectbox("选择页面",
-                                ["主页", "CREATE", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE", "Dynamodb", "Mapping"])
+                                ["主页", "CREATE", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE"
+                                 # , "Dynamodb", "Mapping"
+                                ])
     if page == "主页":
         st.header("欢迎来到主页！")
         st.write('\n')
@@ -364,118 +366,118 @@ if __name__ == "__main__":
             mime="application/sql"
         )
 
-    elif page == "Dynamodb":
-        st.header("Dynamodb页面")
-        page_1 = st.sidebar.selectbox("选择页面", ["opera2", "fusion", "待定"])
-        if page_1 == "opera2":
-            uploaded_file = st.session_state.uploaded_file
-            domain = st.text_input("请输入domain")
-            env = st.text_input("请输入env")
-            state_machine_name = st.text_input("请输入step function名称")
-            df = pd.read_excel(uploaded_file, sheet_name='dynamodb')
-            dy_statements = {}
-            dy_list = []
-            for index, row in df.iterrows():
-                table = row[0]
-                column = row[1]
-                if table not in dy_statements:
-                    dy_statements[table] = []
-                dy_statements[table].append(f"{column}")
-            for k, v in dy_statements.items():
-                dy_dict = {
-                    "domain": domain,
-                    "entity": f"staging_{k}",
-                    "delimiter": ",",
-                    "file_inzip_pattern": "",
-                    "file_inzip_suffix": "",
-                    "is_archive": "N",
-                    "is_exchange_merge": "false",
-                    "is_header": "true",
-                    "is_signal_file": "false",
-                    "is_soft_fail": "true",
-                    "landing_file_format": "csv",
-                    "merge_order_cols": "",
-                    "merge_order_sc": "desc",
-                    "primary_keys": "",
-                    "redshift_enriched_post_job": f"truncate table enriched_em.staging_{k}",
-                    "salesforce_identifier": env,
-                    "salesforce_name": k,
-                    "skip_row": "0",
-                    "source_sensor_poke_interval": "60",
-                    "source_sensor_retry_time": "1",
-                    "source_system": "salesforce",
-                    "sql_query": f"select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",
-                    "standard_columns": f"id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)}",
-                    "state_machine_name": state_machine_name,
-                    "time_delta": "0*60",
-                    "use_cols": ""
-                }
-                dy_list.append(dy_dict)
-            json_str = json.dumps(dy_list, indent=4)
-            st.json(json_str)
-            st.download_button(
-                label="Download JSON",
-                data=json_str,
-                file_name="dynamodb.json",
-                mime="application/json"
-            )
-        elif page_1 == "fusion":
-            uploaded_file = st.session_state.uploaded_file
-            domain = st.text_input("请输入domain")
-            state_machine_name = st.text_input("请输入step function名称")
-            conn_id = st.text_input("请输入conn_id")
-            src_database = st.text_input("请输入src_database")
-            source_system = st.text_input("请输入source_system")
-            df = pd.read_excel(uploaded_file, sheet_name='dynamodb')
-            dy_statements = {}
-            dy_list = []
-            for index, row in df.iterrows():
-                table = row[0]
-                column = row[1]
-                if table not in dy_statements:
-                    dy_statements[table] = []
-                dy_statements[table].append(f"{column}")
-            for k, v in dy_statements.items():
-                dy_dict = {
-                    "domain": domain,
-                    "entity": k,
-                    "conn_id": conn_id,
-                    "customized_load_sql": f"select {','.join(v)} from dbo.{k}",
-                    "is_soft_fail": "true",
-                    "landing_file_format": "parquet",
-                    "load_mode": "customized",
-                    "src_database": src_database,
-                    "redshift_enriched_post_job": f"truncate table enriched_prestage_content.{k};",
-                    "source_sensor_poke_interval": "60",
-                    "source_sensor_retry_time": "5",
-                    "source_system": source_system,
-                    "standard_columns": f"{','.join(v)}",
-                    "state_machine_name": state_machine_name,
-                    "time_delta": "10*60"
-                }
-                dy_list.append(dy_dict)
-            json_str = json.dumps(dy_list, indent=4)
-            st.json(json_str)
-            st.download_button(
-                label="Download JSON",
-                data=json_str,
-                file_name="dynamodb.json",
-                mime="application/json"
-            )
-    elif page == "Mapping":
-        st.header("Mapping页面")
-        uploaded_file = st.session_state.uploaded_file
-        df = pd.read_excel(uploaded_file, sheet_name='mapping')
-        df['derive_desc'].fillna('None', inplace=True)
-        start_id = st.number_input("Input Start Number:  :rainbow[[id]]", value=1,
-                                   placeholder="Type a number...", step=1)
-        json_data = df.to_dict(orient='records')
-        for index, item in enumerate(json_data, start=start_id):
-            item["id"] = str(index)
-        st.download_button(
-            label="Download JSON",
-            data=json.dumps(json_data, indent=4),
-            file_name="mapping.json",
-            mime="application/json"
-        )
-        st.json(json_data)
+    # elif page == "Dynamodb":
+    #     st.header("Dynamodb页面")
+    #     page_1 = st.sidebar.selectbox("选择页面", ["opera2", "fusion", "待定"])
+    #     if page_1 == "opera2":
+    #         uploaded_file = st.session_state.uploaded_file
+    #         domain = st.text_input("请输入domain")
+    #         env = st.text_input("请输入env")
+    #         state_machine_name = st.text_input("请输入step function名称")
+    #         df = pd.read_excel(uploaded_file, sheet_name='dynamodb')
+    #         dy_statements = {}
+    #         dy_list = []
+    #         for index, row in df.iterrows():
+    #             table = row[0]
+    #             column = row[1]
+    #             if table not in dy_statements:
+    #                 dy_statements[table] = []
+    #             dy_statements[table].append(f"{column}")
+    #         for k, v in dy_statements.items():
+    #             dy_dict = {
+    #                 "domain": domain,
+    #                 "entity": f"staging_{k}",
+    #                 "delimiter": ",",
+    #                 "file_inzip_pattern": "",
+    #                 "file_inzip_suffix": "",
+    #                 "is_archive": "N",
+    #                 "is_exchange_merge": "false",
+    #                 "is_header": "true",
+    #                 "is_signal_file": "false",
+    #                 "is_soft_fail": "true",
+    #                 "landing_file_format": "csv",
+    #                 "merge_order_cols": "",
+    #                 "merge_order_sc": "desc",
+    #                 "primary_keys": "",
+    #                 "redshift_enriched_post_job": f"truncate table enriched_em.staging_{k}",
+    #                 "salesforce_identifier": env,
+    #                 "salesforce_name": k,
+    #                 "skip_row": "0",
+    #                 "source_sensor_poke_interval": "60",
+    #                 "source_sensor_retry_time": "1",
+    #                 "source_system": "salesforce",
+    #                 "sql_query": f"select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",
+    #                 "standard_columns": f"id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)}",
+    #                 "state_machine_name": state_machine_name,
+    #                 "time_delta": "0*60",
+    #                 "use_cols": ""
+    #             }
+    #             dy_list.append(dy_dict)
+    #         json_str = json.dumps(dy_list, indent=4)
+    #         st.json(json_str)
+    #         st.download_button(
+    #             label="Download JSON",
+    #             data=json_str,
+    #             file_name="dynamodb.json",
+    #             mime="application/json"
+    #         )
+    #     elif page_1 == "fusion":
+    #         uploaded_file = st.session_state.uploaded_file
+    #         domain = st.text_input("请输入domain")
+    #         state_machine_name = st.text_input("请输入step function名称")
+    #         conn_id = st.text_input("请输入conn_id")
+    #         src_database = st.text_input("请输入src_database")
+    #         source_system = st.text_input("请输入source_system")
+    #         df = pd.read_excel(uploaded_file, sheet_name='dynamodb')
+    #         dy_statements = {}
+    #         dy_list = []
+    #         for index, row in df.iterrows():
+    #             table = row[0]
+    #             column = row[1]
+    #             if table not in dy_statements:
+    #                 dy_statements[table] = []
+    #             dy_statements[table].append(f"{column}")
+    #         for k, v in dy_statements.items():
+    #             dy_dict = {
+    #                 "domain": domain,
+    #                 "entity": k,
+    #                 "conn_id": conn_id,
+    #                 "customized_load_sql": f"select {','.join(v)} from dbo.{k}",
+    #                 "is_soft_fail": "true",
+    #                 "landing_file_format": "parquet",
+    #                 "load_mode": "customized",
+    #                 "src_database": src_database,
+    #                 "redshift_enriched_post_job": f"truncate table enriched_prestage_content.{k};",
+    #                 "source_sensor_poke_interval": "60",
+    #                 "source_sensor_retry_time": "5",
+    #                 "source_system": source_system,
+    #                 "standard_columns": f"{','.join(v)}",
+    #                 "state_machine_name": state_machine_name,
+    #                 "time_delta": "10*60"
+    #             }
+    #             dy_list.append(dy_dict)
+    #         json_str = json.dumps(dy_list, indent=4)
+    #         st.json(json_str)
+    #         st.download_button(
+    #             label="Download JSON",
+    #             data=json_str,
+    #             file_name="dynamodb.json",
+    #             mime="application/json"
+    #         )
+    # elif page == "Mapping":
+    #     st.header("Mapping页面")
+    #     uploaded_file = st.session_state.uploaded_file
+    #     df = pd.read_excel(uploaded_file, sheet_name='mapping')
+    #     df['derive_desc'].fillna('None', inplace=True)
+    #     start_id = st.number_input("Input Start Number:  :rainbow[[id]]", value=1,
+    #                                placeholder="Type a number...", step=1)
+    #     json_data = df.to_dict(orient='records')
+    #     for index, item in enumerate(json_data, start=start_id):
+    #         item["id"] = str(index)
+    #     st.download_button(
+    #         label="Download JSON",
+    #         data=json.dumps(json_data, indent=4),
+    #         file_name="mapping.json",
+    #         mime="application/json"
+    #     )
+    #     st.json(json_data)
