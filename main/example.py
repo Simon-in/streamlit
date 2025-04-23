@@ -8,7 +8,7 @@ from datetime import time, datetime
 class example:
     def __init__(self):
         pass
-        
+
     def button(self):
         code = """
         import streamlit as st \n
