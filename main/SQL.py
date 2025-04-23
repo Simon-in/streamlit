@@ -3,15 +3,15 @@ import streamlit as st
 
 
 class sql:
-    def __init__(self):
-        pass
+    def __init__(self, path):
+        self.path = path
 
-    def bulk_select(path, table, column):
-        if not path:
+    def bulk_select(self, table, column):
+        if not self.path:
             select_statement = f"SELECT {', '.join(column)} FROM {table};"
             return select_statement
         else:
-            df = pd.read_excel(path, sheet_name='select')
+            df = pd.read_excel(self.path, sheet_name='select')
             se_list = []
             for index, row in df.iterrows():
                 target_table = row[0]
@@ -22,16 +22,16 @@ class sql:
                 se_list.append(select_statements)
             return se_list
 
-    def bulk_insert(path):
-        df = pd.read_excel(path, sheet_name='insert')
+    def bulk_insert(self):
+        df = pd.read_excel(self.path, sheet_name='insert')
         isrt_list = [
             f"INSERT INTO {row[0]} ({row[1]}) VALUES ({row[2]});"
             for row in df.itertuples(index=False)
         ]
         return isrt_list
 
-    def bulk_delete(path, target_table, column, uniqueid, source_table):
-        if path is None:
+    def bulk_delete(self, target_table, column, uniqueid, source_table):
+        if self.path is None:
             del_list = f"delete from {target_table} \n" \
                        f" where {uniqueid} in (" \
                        f"select {uniqueid} from {source_table})  \n" \
@@ -42,7 +42,7 @@ class sql:
             return del_list
         else:
             del_list = []
-            df = pd.read_excel(path, sheet_name='delete')
+            df = pd.read_excel(self.path, sheet_name='delete')
             for index, row in df.iterrows():
                 target_domain = row[0]
                 target_table = row[1]
@@ -64,9 +64,9 @@ class sql:
                 del_list.append(insert_statement)
             return del_list
 
-    def bulk_truncate(path, a):
-        if path is not None and a is None:
-            df = pd.read_excel(path, sheet_name='truncate')
+    def bulk_truncate(self, a):
+        if self.path is not None and a is None:
+            df = pd.read_excel(self.path, sheet_name='truncate')
             df_list = []
             trun_list = []
             for i in range(df.__len__()):
@@ -79,8 +79,8 @@ class sql:
                 )
                 trun_list.append(truncate_statement)
             return trun_list
-        if path is not None and a is not None:
-            df = pd.read_excel(path, sheet_name='truncate')
+        if self.path is not None and a is not None:
+            df = pd.read_excel(self.path, sheet_name='truncate')
             trun_list = []
             for index, row in df.iterrows():
                 target_table = row[0]
@@ -107,9 +107,9 @@ class sql:
                 trun_list.append(insert_statement)
             return trun_list
 
-    def bulk_merge(path):
-        if path is not None:
-            df = pd.read_excel(path, sheet_name='merge')
+    def bulk_merge(self):
+        if self.path is not None:
+            df = pd.read_excel(self.path, sheet_name='merge')
             merge_list = []
             for index, row in df.iterrows():
                 target_table = row[0]
@@ -140,7 +140,7 @@ class sql:
                 merge_list.append(merge_statement)
             return merge_list
 
-    def download_button(button_name: str, file_path: str, file_type: str) -> None:
+    def download_button(self, button_name: str, file_path: str, file_type: str) -> None:
         mime_types = {
             'xlsx': "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             'zip': "application/zip",
@@ -164,8 +164,8 @@ class sql:
         except FileNotFoundError:
             st.error(f"File not found: {file_path}")
 
-    def bulk_create(path):
-        df = pd.read_excel(path, sheet_name='create')
+    def bulk_create(self):
+        df = pd.read_excel(self.path, sheet_name='create')
         create_statements = {}
         for _, row in df.iterrows():
             domain = row[0]
@@ -184,7 +184,7 @@ class sql:
     def bulk_update(self):
         pass
 
-    def sql_formatted(sql_list):
+    def sql_formatted(self, sql_list):
         cleaned_statements = [stmt.strip() for stmt in sql_list if stmt.strip()]
         statement = "\n".join(cleaned_statements)
         return statement
