@@ -24,11 +24,11 @@ class sql:
 
     def bulk_insert(self):
         df = pd.read_excel(self.path, sheet_name='insert')
-        isrt_list = [
+        ist_list = [
             f"INSERT INTO {row[0]} ({row[1]}) VALUES ({row[2]});"
             for row in df.itertuples(index=False)
         ]
-        return isrt_list
+        return ist_list
 
     def bulk_delete(self, target_table, column, uniqueid, source_table):
         if self.path is None:
@@ -68,20 +68,19 @@ class sql:
         if self.path is not None and a is None:
             df = pd.read_excel(self.path, sheet_name='truncate')
             df_list = []
-            trun_list = []
+            trunk_list = []
             for i in range(df.__len__()):
-                df_dict = {}
-                df_dict['table'] = df.iloc[i, 0]
+                df_dict = {'table': df.iloc[i, 0]}
                 df_list.append(df_dict)
             for info in df_list:
                 truncate_statement = (
                     f"truncate table {info.get('table')};"
                 )
-                trun_list.append(truncate_statement)
-            return trun_list
+                trunk_list.append(truncate_statement)
+            return trunk_list
         if self.path is not None and a is not None:
             df = pd.read_excel(self.path, sheet_name='truncate')
-            trun_list = []
+            trunk_list = []
             for index, row in df.iterrows():
                 target_table = row[0]
                 target_column = row[1].split(',')
@@ -103,9 +102,9 @@ class sql:
                     f"    {formatted_fields}\n"
                     f"FROM {source_table}; \n"
                 )
-                trun_list.append(truncate_statement)
-                trun_list.append(insert_statement)
-            return trun_list
+                trunk_list.append(truncate_statement)
+                trunk_list.append(insert_statement)
+            return trunk_list
 
     def bulk_merge(self):
         if self.path is not None:
@@ -140,7 +139,7 @@ class sql:
                 merge_list.append(merge_statement)
             return merge_list
 
-    def download_button(self, button_name: str, file_path: str, file_type: str) -> None:
+    def download_button(self, button_name, file_path, file_type):
         mime_types = {
             'xlsx': "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             'zip': "application/zip",
@@ -188,9 +187,6 @@ class sql:
         cleaned_statements = [stmt.strip() for stmt in sql_list if stmt.strip()]
         statement = "\n".join(cleaned_statements)
         return statement
-
-
-
 
         # elif sub_page == "Dynamodb":
         #     st.header("Dynamodb页面")
