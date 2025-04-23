@@ -2,6 +2,7 @@ import json
 import pandas as pd
 import streamlit as st
 from PIL import Image
+from main import main
 
 
 def bulk_select(path, table, column):
@@ -198,286 +199,303 @@ def sql_formatted(sql_list):
 
 if __name__ == "__main__":
     page = st.sidebar.selectbox("选择页面",
-                                ["主页", "CREATE", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE"])
-    # , "Dynamodb", "Mapping"
+                                ["SQL", "example"])
 
-    if page == "主页":
-        st.header("欢迎来到主页！")
-        st.write('\n')
-        st.markdown(
-            "在上传文件前请下载样例文件查看如何配置后,\n"
-            "你可以从侧面导航栏选择你想进行的操作,\n"
-            "复制sql语句或者下载sql文件"
-        )
-        download_button("样例下载", r"main/static/main_static_样例 - Copy.xlsx", 'xlsx')
-        uploaded_file = st.file_uploader("上传文件", type=["csv", "txt", "xlsx"])
-        if uploaded_file is not None:
-            st.session_state.uploaded_file = uploaded_file
-            st.success("文件上传成功！")
-    elif page == "CREATE":
-        st.header("CREATE页面 ")
-        sample_image = Image.open("main/image/create.png")
-        st.image(sample_image, caption="样例图片", use_column_width=True)
-        uploaded_file = st.session_state.uploaded_file
-        create_sql = bulk_create(uploaded_file)
-        sql = sql_formatted(create_sql)
-        st.write(f"语句")
-        st.code(sql, language='sql')
-        st.download_button(
-            label="Download sql",
-            data=sql,
-            file_name="create.sql",
-            mime="application/sql"
-        )
-
-    elif page == "SELECT":
-        st.header("SELECT页面 ")
-        page_1 = st.sidebar.selectbox("选择页面", ["单张表", "批量生成多表"])
-        if page_1 == "单张表":
-            table_name = None
-            column_list = None
-            if table_name is None and column_list is None:
-                table_name = st.text_input("请输入表名")
-                column_list = st.text_input("请输入字段")
-                if table_name and column_list:
-                    select_sql = bulk_select(None, table_name, column_list)
-                    st.write(f"语句")
-                    st.code(select_sql, language='sql')
-        elif page_1 == "批量生成多表":
-            sample_image = Image.open("main/image/select.png")
+    if page == "SQL":
+        sub_page = st.sidebar.selectbox("选择页面",
+                                    ["主页", "CREATE", "SELECT", "INSERT", "UPDATE", "MERGE", "DELETE", "TRUNCATE"])
+        # , "Dynamodb", "Mapping"
+        if sub_page == "主页":
+            st.header("欢迎来到主页！")
+            st.write('\n')
+            st.markdown(
+                "在上传文件前请下载样例文件查看如何配置后,\n"
+                "你可以从侧面导航栏选择你想进行的操作,\n"
+                "复制sql语句或者下载sql文件"
+            )
+            download_button("样例下载", r"main/static/main_static_样例 - Copy.xlsx", 'xlsx')
+            uploaded_file = st.file_uploader("上传文件", type=["csv", "txt", "xlsx"])
+            if uploaded_file is not None:
+                st.session_state.uploaded_file = uploaded_file
+                st.success("文件上传成功！")
+        elif sub_page == "CREATE":
+            st.header("CREATE页面 ")
+            sample_image = Image.open("main/image/create.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.session_state.uploaded_file
-            select_sql = bulk_select(uploaded_file, None, None)
-            sql = sql_formatted(select_sql)
+            create_sql = bulk_create(uploaded_file)
+            sql = sql_formatted(create_sql)
             st.write(f"语句")
             st.code(sql, language='sql')
             st.download_button(
                 label="Download sql",
                 data=sql,
-                file_name="select.sql",
+                file_name="create.sql",
                 mime="application/sql"
             )
 
-    elif page == "INSERT":
-        st.header("INSERT页面")
-        sample_image = Image.open("main/image/insert.png")
-        st.image(sample_image, caption="样例图片", use_column_width=True)
-        uploaded_file = st.session_state.uploaded_file
-        insert_sql = bulk_insert(uploaded_file)
-        sql = sql_formatted(insert_sql)
-        st.write(f"语句：")
-        st.code(sql, language='sql')
-        st.download_button(
-            label="Download sql",
-            data=sql,
-            file_name="insert.sql",
-            mime="application/sql"
-        )
+        elif sub_page == "SELECT":
+            st.header("SELECT页面 ")
+            page_1 = st.sidebar.selectbox("选择页面", ["单张表", "批量生成多表"])
+            if page_1 == "单张表":
+                table_name = None
+                column_list = None
+                if table_name is None and column_list is None:
+                    table_name = st.text_input("请输入表名")
+                    column_list = st.text_input("请输入字段")
+                    if table_name and column_list:
+                        select_sql = bulk_select(None, table_name, column_list)
+                        st.write(f"语句")
+                        st.code(select_sql, language='sql')
+            elif page_1 == "批量生成多表":
+                sample_image = Image.open("main/image/select.png")
+                st.image(sample_image, caption="样例图片", use_column_width=True)
+                uploaded_file = st.session_state.uploaded_file
+                select_sql = bulk_select(uploaded_file, None, None)
+                sql = sql_formatted(select_sql)
+                st.write(f"语句")
+                st.code(sql, language='sql')
+                st.download_button(
+                    label="Download sql",
+                    data=sql,
+                    file_name="select.sql",
+                    mime="application/sql"
+                )
 
-    elif page == "TRUNCATE":
-        st.header("TRUNCATE页面")
-        page_1 = st.sidebar.selectbox("选择页面", ["单张表", "批量生成多表", "全删全插"])
-        if page_1 == "单张表":
-            table = None
-            if table is None:
-                table = st.text_input("请输入表名")
-            truncate_sql = f"TRUNCATE TABLE {table};"
+        elif sub_page == "INSERT":
+            st.header("INSERT页面")
+            sample_image = Image.open("main/image/insert.png")
+            st.image(sample_image, caption="样例图片", use_column_width=True)
+            uploaded_file = st.session_state.uploaded_file
+            insert_sql = bulk_insert(uploaded_file)
+            sql = sql_formatted(insert_sql)
             st.write(f"语句：")
-            st.code(truncate_sql, language='sql')
-        elif page_1 == "批量生成多表":
-            sample_image = Image.open("main/image/truncate.png")
-            st.image(sample_image, caption="样例图片", use_column_width=True)
-            uploaded_file = st.session_state.uploaded_file
-            truncate_sql = bulk_truncate(uploaded_file, None)
-            sql = sql_formatted(truncate_sql)
-            st.write(f"语句")
             st.code(sql, language='sql')
             st.download_button(
                 label="Download sql",
                 data=sql,
-                file_name="truncate.sql",
-                mime="application/sql"
-            )
-        elif page_1 == "全删全插":
-            sample_image = Image.open("main/image/truncate_1.png")
-            st.image(sample_image, caption="样例图片", use_column_width=True)
-            uploaded_file = st.session_state.uploaded_file
-            a = 1
-            truncate_sql = bulk_truncate(uploaded_file, a)
-            sql = sql_formatted(truncate_sql)
-            st.write(f"语句")
-            st.code(sql, language='sql')
-            st.download_button(
-                label="Download sql",
-                data=sql,
-                file_name="truncate.sql",
+                file_name="insert.sql",
                 mime="application/sql"
             )
 
-    elif page == "UPDATE":  # 暂时没有想到批量化
-        st.header("UPDATE页面")
-        st.write(f"暂时没有想法")
-
-    elif page == "DELETE":
-        st.header("DELETE页面")
-        page_1 = st.sidebar.selectbox("选择页面", ["单张表", "批量生成多表"])
-        if page_1 == "单张表":
-            target_table = None
-            column = None
-            uniqueid = None
-            source_table = None
-            if target_table is None and column is None and uniqueid is None and source_table is None:
-                target_table = st.text_input("请输入表名")
-                column = st.text_input("请输入字段")
-                uniqueid = st.text_input('请输入增量字段如 ID 等')
-                source_table = st.text_input('请输入staging层表')
-                delete_sql = bulk_delete(None, target_table, column, uniqueid, source_table)
+        elif sub_page == "TRUNCATE":
+            st.header("TRUNCATE页面")
+            sub_sub_page = st.sidebar.selectbox("选择页面", ["单张表", "批量生成多表", "全删全插"])
+            if sub_sub_page == "单张表":
+                table = None
+                if table is None:
+                    table = st.text_input("请输入表名")
+                truncate_sql = f"TRUNCATE TABLE {table};"
                 st.write(f"语句：")
-                st.code(delete_sql, language='sql')
+                st.code(truncate_sql, language='sql')
+            elif sub_sub_page == "批量生成多表":
+                sample_image = Image.open("main/image/truncate.png")
+                st.image(sample_image, caption="样例图片", use_column_width=True)
+                uploaded_file = st.session_state.uploaded_file
+                truncate_sql = bulk_truncate(uploaded_file, None)
+                sql = sql_formatted(truncate_sql)
+                st.write(f"语句")
+                st.code(sql, language='sql')
+                st.download_button(
+                    label="Download sql",
+                    data=sql,
+                    file_name="truncate.sql",
+                    mime="application/sql"
+                )
+            elif sub_sub_page == "全删全插":
+                sample_image = Image.open("main/image/truncate_1.png")
+                st.image(sample_image, caption="样例图片", use_column_width=True)
+                uploaded_file = st.session_state.uploaded_file
+                a = 1
+                truncate_sql = bulk_truncate(uploaded_file, a)
+                sql = sql_formatted(truncate_sql)
+                st.write(f"语句")
+                st.code(sql, language='sql')
+                st.download_button(
+                    label="Download sql",
+                    data=sql,
+                    file_name="truncate.sql",
+                    mime="application/sql"
+                )
 
-        elif page_1 == "批量生成多表":
-            sample_image = Image.open("main/image/delete.png")
+        elif sub_page == "UPDATE":  # 暂时没有想到批量化
+            st.header("UPDATE页面")
+            st.write(f"暂时没有想法")
+
+        elif sub_page == "DELETE":
+            st.header("DELETE页面")
+            sub_sub_page = st.sidebar.selectbox("选择页面", ["单张表", "批量生成多表"])
+            if sub_sub_page == "单张表":
+                target_table = None
+                column = None
+                uniqueid = None
+                source_table = None
+                if target_table is None and column is None and uniqueid is None and source_table is None:
+                    target_table = st.text_input("请输入表名")
+                    column = st.text_input("请输入字段")
+                    uniqueid = st.text_input('请输入增量字段如 ID 等')
+                    source_table = st.text_input('请输入staging层表')
+                    delete_sql = bulk_delete(None, target_table, column, uniqueid, source_table)
+                    st.write(f"语句：")
+                    st.code(delete_sql, language='sql')
+
+            elif sub_sub_page == "批量生成多表":
+                sample_image = Image.open("main/image/delete.png")
+                st.image(sample_image, caption="样例图片", use_column_width=True)
+                uploaded_file = st.session_state.uploaded_file
+                delete_sql = bulk_delete(uploaded_file, None, None, None, None)
+                sql = sql_formatted(delete_sql)
+                st.write(f"语句")
+                st.code(sql, language='sql')
+                st.download_button(
+                    label="Download sql",
+                    data=sql,
+                    file_name="delete.sql",
+                    mime="application/sql"
+                )
+
+        elif sub_page == "MERGE":
+            st.header("MERGE页面")
+            sample_image = Image.open("main/image/merge.png")
             st.image(sample_image, caption="样例图片", use_column_width=True)
             uploaded_file = st.session_state.uploaded_file
-            delete_sql = bulk_delete(uploaded_file, None, None, None, None)
-            sql = sql_formatted(delete_sql)
+            merge_sql = bulk_merge(uploaded_file)
+            sql = sql_formatted(merge_sql)
             st.write(f"语句")
             st.code(sql, language='sql')
             st.download_button(
                 label="Download sql",
                 data=sql,
-                file_name="delete.sql",
+                file_name="merge.sql",
                 mime="application/sql"
             )
 
-    elif page == "MERGE":
-        st.header("MERGE页面")
-        sample_image = Image.open("main/image/merge.png")
-        st.image(sample_image, caption="样例图片", use_column_width=True)
-        uploaded_file = st.session_state.uploaded_file
-        merge_sql = bulk_merge(uploaded_file)
-        sql = sql_formatted(merge_sql)
-        st.write(f"语句")
-        st.code(sql, language='sql')
-        st.download_button(
-            label="Download sql",
-            data=sql,
-            file_name="merge.sql",
-            mime="application/sql"
-        )
-
-    # elif page == "Dynamodb":
-    #     st.header("Dynamodb页面")
-    #     page_1 = st.sidebar.selectbox("选择页面", ["opera2", "fusion", "待定"])
-    #     if page_1 == "opera2":
-    #         uploaded_file = st.session_state.uploaded_file
-    #         domain = st.text_input("请输入domain")
-    #         env = st.text_input("请输入env")
-    #         state_machine_name = st.text_input("请输入step function名称")
-    #         df = pd.read_excel(uploaded_file, sheet_name='dynamodb')
-    #         dy_statements = {}
-    #         dy_list = []
-    #         for index, row in df.iterrows():
-    #             table = row[0]
-    #             column = row[1]
-    #             if table not in dy_statements:
-    #                 dy_statements[table] = []
-    #             dy_statements[table].append(f"{column}")
-    #         for k, v in dy_statements.items():
-    #             dy_dict = {
-    #                 "domain": domain,
-    #                 "entity": f"staging_{k}",
-    #                 "delimiter": ",",
-    #                 "file_inzip_pattern": "",
-    #                 "file_inzip_suffix": "",
-    #                 "is_archive": "N",
-    #                 "is_exchange_merge": "false",
-    #                 "is_header": "true",
-    #                 "is_signal_file": "false",
-    #                 "is_soft_fail": "true",
-    #                 "landing_file_format": "csv",
-    #                 "merge_order_cols": "",
-    #                 "merge_order_sc": "desc",
-    #                 "primary_keys": "",
-    #                 "redshift_enriched_post_job": f"truncate table enriched_em.staging_{k}",
-    #                 "salesforce_identifier": env,
-    #                 "salesforce_name": k,
-    #                 "skip_row": "0",
-    #                 "source_sensor_poke_interval": "60",
-    #                 "source_sensor_retry_time": "1",
-    #                 "source_system": "salesforce",
-    #                 "sql_query": f"select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",
-    #                 "standard_columns": f"id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)}",
-    #                 "state_machine_name": state_machine_name,
-    #                 "time_delta": "0*60",
-    #                 "use_cols": ""
-    #             }
-    #             dy_list.append(dy_dict)
-    #         json_str = json.dumps(dy_list, indent=4)
-    #         st.json(json_str)
-    #         st.download_button(
-    #             label="Download JSON",
-    #             data=json_str,
-    #             file_name="dynamodb.json",
-    #             mime="application/json"
-    #         )
-    #     elif page_1 == "fusion":
-    #         uploaded_file = st.session_state.uploaded_file
-    #         domain = st.text_input("请输入domain")
-    #         state_machine_name = st.text_input("请输入step function名称")
-    #         conn_id = st.text_input("请输入conn_id")
-    #         src_database = st.text_input("请输入src_database")
-    #         source_system = st.text_input("请输入source_system")
-    #         df = pd.read_excel(uploaded_file, sheet_name='dynamodb')
-    #         dy_statements = {}
-    #         dy_list = []
-    #         for index, row in df.iterrows():
-    #             table = row[0]
-    #             column = row[1]
-    #             if table not in dy_statements:
-    #                 dy_statements[table] = []
-    #             dy_statements[table].append(f"{column}")
-    #         for k, v in dy_statements.items():
-    #             dy_dict = {
-    #                 "domain": domain,
-    #                 "entity": k,
-    #                 "conn_id": conn_id,
-    #                 "customized_load_sql": f"select {','.join(v)} from dbo.{k}",
-    #                 "is_soft_fail": "true",
-    #                 "landing_file_format": "parquet",
-    #                 "load_mode": "customized",
-    #                 "src_database": src_database,
-    #                 "redshift_enriched_post_job": f"truncate table enriched_prestage_content.{k};",
-    #                 "source_sensor_poke_interval": "60",
-    #                 "source_sensor_retry_time": "5",
-    #                 "source_system": source_system,
-    #                 "standard_columns": f"{','.join(v)}",
-    #                 "state_machine_name": state_machine_name,
-    #                 "time_delta": "10*60"
-    #             }
-    #             dy_list.append(dy_dict)
-    #         json_str = json.dumps(dy_list, indent=4)
-    #         st.json(json_str)
-    #         st.download_button(
-    #             label="Download JSON",
-    #             data=json_str,
-    #             file_name="dynamodb.json",
-    #             mime="application/json"
-    #         )
-    # elif page == "Mapping":
-    #     st.header("Mapping页面")
-    #     uploaded_file = st.session_state.uploaded_file
-    #     df = pd.read_excel(uploaded_file, sheet_name='mapping')
-    #     df['derive_desc'].fillna('None', inplace=True)
-    #     start_id = st.number_input("Input Start Number:  :rainbow[[id]]", value=1,
-    #                                placeholder="Type a number...", step=1)
-    #     json_data = df.to_dict(orient='records')
-    #     for index, item in enumerate(json_data, start=start_id):
-    #         item["id"] = str(index)
-    #     st.download_button(
-    #         label="Download JSON",
-    #         data=json.dumps(json_data, indent=4),
-    #         file_name="mapping.json",
-    #         mime="application/json"
-    #     )
-    #     st.json(json_data)
+        # elif sub_page == "Dynamodb":
+        #     st.header("Dynamodb页面")
+        #     sub_sub_page = st.sidebar.selectbox("选择页面", ["opera2", "fusion", "待定"])
+        #     if sub_sub_page == "opera2":
+        #         uploaded_file = st.session_state.uploaded_file
+        #         domain = st.text_input("请输入domain")
+        #         env = st.text_input("请输入env")
+        #         state_machine_name = st.text_input("请输入step function名称")
+        #         df = pd.read_excel(uploaded_file, sheet_name='dynamodb')
+        #         dy_statements = {}
+        #         dy_list = []
+        #         for index, row in df.iterrows():
+        #             table = row[0]
+        #             column = row[1]
+        #             if table not in dy_statements:
+        #                 dy_statements[table] = []
+        #             dy_statements[table].append(f"{column}")
+        #         for k, v in dy_statements.items():
+        #             dy_dict = {
+        #                 "domain": domain,
+        #                 "entity": f"staging_{k}",
+        #                 "delimiter": ",",
+        #                 "file_inzip_pattern": "",
+        #                 "file_inzip_suffix": "",
+        #                 "is_archive": "N",
+        #                 "is_exchange_merge": "false",
+        #                 "is_header": "true",
+        #                 "is_signal_file": "false",
+        #                 "is_soft_fail": "true",
+        #                 "landing_file_format": "csv",
+        #                 "merge_order_cols": "",
+        #                 "merge_order_sc": "desc",
+        #                 "primary_keys": "",
+        #                 "redshift_enriched_post_job": f"truncate table enriched_em.staging_{k}",
+        #                 "salesforce_identifier": env,
+        #                 "salesforce_name": k,
+        #                 "skip_row": "0",
+        #                 "source_sensor_poke_interval": "60",
+        #                 "source_sensor_retry_time": "1",
+        #                 "source_system": "salesforce",
+        #                 "sql_query": f"select id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)} from {k} where systemmodstamp >= LAST_N_DAYS:10",
+        #                 "standard_columns": f"id,name,isdeleted,currencyisocode,createddate,createdbyid,lastmodifieddate,lastmodifiedbyid,systemmodstamp,{','.join(v)}",
+        #                 "state_machine_name": state_machine_name,
+        #                 "time_delta": "0*60",
+        #                 "use_cols": ""
+        #             }
+        #             dy_list.append(dy_dict)
+        #         json_str = json.dumps(dy_list, indent=4)
+        #         st.json(json_str)
+        #         st.download_button(
+        #             label="Download JSON",
+        #             data=json_str,
+        #             file_name="dynamodb.json",
+        #             mime="application/json"
+        #         )
+        #     elif sub_sub_page == "fusion":
+        #         uploaded_file = st.session_state.uploaded_file
+        #         domain = st.text_input("请输入domain")
+        #         state_machine_name = st.text_input("请输入step function名称")
+        #         conn_id = st.text_input("请输入conn_id")
+        #         src_database = st.text_input("请输入src_database")
+        #         source_system = st.text_input("请输入source_system")
+        #         df = pd.read_excel(uploaded_file, sheet_name='dynamodb')
+        #         dy_statements = {}
+        #         dy_list = []
+        #         for index, row in df.iterrows():
+        #             table = row[0]
+        #             column = row[1]
+        #             if table not in dy_statements:
+        #                 dy_statements[table] = []
+        #             dy_statements[table].append(f"{column}")
+        #         for k, v in dy_statements.items():
+        #             dy_dict = {
+        #                 "domain": domain,
+        #                 "entity": k,
+        #                 "conn_id": conn_id,
+        #                 "customized_load_sql": f"select {','.join(v)} from dbo.{k}",
+        #                 "is_soft_fail": "true",
+        #                 "landing_file_format": "parquet",
+        #                 "load_mode": "customized",
+        #                 "src_database": src_database,
+        #                 "redshift_enriched_post_job": f"truncate table enriched_prestage_content.{k};",
+        #                 "source_sensor_poke_interval": "60",
+        #                 "source_sensor_retry_time": "5",
+        #                 "source_system": source_system,
+        #                 "standard_columns": f"{','.join(v)}",
+        #                 "state_machine_name": state_machine_name,
+        #                 "time_delta": "10*60"
+        #             }
+        #             dy_list.append(dy_dict)
+        #         json_str = json.dumps(dy_list, indent=4)
+        #         st.json(json_str)
+        #         st.download_button(
+        #             label="Download JSON",
+        #             data=json_str,
+        #             file_name="dynamodb.json",
+        #             mime="application/json"
+        #         )
+        # elif sub_page == "Mapping":
+        #     st.header("Mapping页面")
+        #     uploaded_file = st.session_state.uploaded_file
+        #     df = pd.read_excel(uploaded_file, sheet_name='mapping')
+        #     df['derive_desc'].fillna('None', inplace=True)
+        #     start_id = st.number_input("Input Start Number:  :rainbow[[id]]", value=1,
+        #                                placeholder="Type a number...", step=1)
+        #     json_data = df.to_dict(orient='records')
+        #     for index, item in enumerate(json_data, start=start_id):
+        #         item["id"] = str(index)
+        #     st.download_button(
+        #         label="Download JSON",
+        #         data=json.dumps(json_data, indent=4),
+        #         file_name="mapping.json",
+        #         mime="application/json"
+        #     )
+        #     st.json(json_data)
+    elif page == 'example':
+        page = st.sidebar.selectbox("选择示例页面",
+                                    ["主页", "button", "write", "slider", "line_chart", "selectbox"])
+        main = main()
+        if page == 'button':
+            main.button()
+        elif page == 'write':
+            main.write()
+        elif page == 'slider':
+            main.slider()
+        elif page == 'line_chart':
+            main.line_chart()
+        elif page == 'selectbox':
+            main.select_box()
