@@ -1,29 +1,60 @@
+# -*- coding: utf-8 -*-
+"""
+Streamlit组件示例 - 展示各种Streamlit组件的使用方法
+"""
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import altair as alt
 from datetime import time, datetime
+from utils import UIHelper
 
 
 class example:
+    """Streamlit组件示例类"""
+    
     def __init__(self):
         pass
 
     def button(self):
-        code = """
-        import streamlit as st \n
-        st.header('st.button')
-            if st.button('Say hello'):
-                st.write('Why hello there')
+        """按钮组件示例"""
+        UIHelper.create_section_header("🔘 Button 组件", "展示按钮的基本用法")
+        
+        st.markdown("### 基础按钮示例")
+        
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            st.subheader("演示效果")
+            if st.button('Say hello', key="demo_button"):
+                st.success('Why hello there! 👋')
             else:
-                st.write('Goodbye')
-        """
-        st.header('st.button')
-        if st.button('Say hello'):
-            st.write('Why hello there')
-        else:
-            st.write('Goodbye')
-        st.code(code, language='python')
+                st.info('点击按钮试试看')
+                
+        with col2:
+            st.subheader("代码示例")
+            code = '''import streamlit as st
+
+if st.button('Say hello'):
+    st.success('Why hello there! 👋')
+else:
+    st.info('点击按钮试试看')'''
+            st.code(code, language='python')
+            
+        # 更多按钮示例
+        st.markdown("### 更多按钮样式")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            if st.button("Primary", type="primary"):
+                st.balloons()
+        with col2:
+            if st.button("Secondary", type="secondary"):
+                st.snow()
+        with col3:
+            if st.button("Disabled", disabled=True):
+                pass
 
     def write(self):
         st.header('st.write')
