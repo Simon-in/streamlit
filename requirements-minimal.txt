@@ -1,0 +1,21 @@
+# 最小运行时依赖 - 仅包含核心功能所需的包
+
+# Core Streamlit framework
+streamlit==1.39.0
+
+# Data processing
+pandas==2.2.3
+numpy==1.26.3
+openpyxl==3.1.0
+
+# Image processing
+Pillow==10.4.0
+
+# SQL formatting
+sqlparse==0.5.1
+
+# Data visualization for examples
+altair==5.2.0
+
+# Type hints support
+typing-extensions==4.8.0 
