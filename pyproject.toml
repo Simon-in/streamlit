@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sql_generator"
+version = "1.0.0"
+description = "SQL语句生成工具"
+readme = "README.md"
+authors = [
+    {name = "SQL Generator Team"},
+]
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/username/sql-generator"
+"Bug Tracker" = "https://github.com/username/sql-generator/issues"
+
+[tool.black]
+line-length = 88
+target-version = ["py38", "py39", "py310"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+module = ["pandas.*", "numpy.*", "streamlit.*"]
+ignore_missing_imports = true
