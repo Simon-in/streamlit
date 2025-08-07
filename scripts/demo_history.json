@@ -1,0 +1,37 @@
+{
+  "history": [],
+  "favorites": [],
+  "stats": {},
+  "records": [
+    {
+      "id": "d11bed67-bef0-4781-88ad-da2c8ae5378a",
+      "operation_type": "SELECT",
+      "sql_content": "SELECT * FROM users WHERE status = 'active'",
+      "file_name": "user_query.sql",
+      "user_notes": "查询活跃用户",
+      "tags": [
+        "用户",
+        "查询",
+        "活跃"
+      ],
+      "created_at": "2025-08-07T14:51:50.666837",
+      "is_favorite": false
+    },
+    {
+      "id": "7581500e-2a17-49a5-9ca0-cdd1d12c60b1",
+      "operation_type": "CREATE",
+      "sql_content": "CREATE TABLE products (id INT PRIMARY KEY, name VARCHAR(100))",
+      "file_name": "create_products.sql",
+      "user_notes": "创建产品表",
+      "tags": [
+        "产品",
+        "创建表"
+      ],
+      "created_at": "2025-08-07T14:51:50.675761",
+      "is_favorite": false
+    }
+  ],
+  "meta": {
+    "last_updated": "2025-08-07T14:51:50.675761"
+  }
+}
